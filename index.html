@@ -1,0 +1,431 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { Send, User, Bot, Briefcase, Users, Info, MessageCircle } from 'lucide-react';
+
+const MichaelDugasAI = () => {
+  const [messages, setMessages] = useState([
+    {
+      type: 'bot',
+      content: "Hi! I'm here to share insights about Michael Dugas and his approach to driving revenue growth and building winning cultures.\n\nBefore we dive in, I'm curious—what brings you here today? Are you exploring leadership talent for your organization, considering strategic advisory support, or perhaps just interested in learning about innovative approaches to business growth?",
+      timestamp: new Date()
+    }
+  ]);
+  const [inputValue, setInputValue] = useState('');
+  const [userIntent, setUserIntent] = useState('unknown');
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // Enhanced intent classification
+  const classifyIntent = (message) => {
+    const lowerMessage = message.toLowerCase();
+    
+    const evaluationSignals = [
+      'good fit', 'right fit', 'help me decide', 'should i hire', 'qualified', 
+      'applied to', 'candidate for', 'interviewing', 'considering', 'evaluate'
+    ];
+    
+    const hiringSignals = [
+      'hire', 'hiring', 'position', 'role', 'job', 'director', 'full-time', 
+      'employment', 'team', 'organization', 'company', 'looking for', 'candidate'
+    ];
+    
+    const advisorySignals = [
+      'advisory', 'consultant', 'consulting', 'project', 'help with', 'need expertise',
+      'strategic', 'guidance', 'growth', 'revenue', 'strategy', 'optimization'
+    ];
+    
+    const learningSignals = [
+      'curious', 'learn', 'understand', 'tell me', 'explain', 'how do you',
+      'what is', 'interesting', 'background', 'experience'
+    ];
+
+    const evaluationScore = evaluationSignals.filter(signal => lowerMessage.includes(signal)).length;
+    const hiringScore = hiringSignals.filter(signal => lowerMessage.includes(signal)).length;
+    const advisoryScore = advisorySignals.filter(signal => lowerMessage.includes(signal)).length;
+    const learningScore = learningSignals.filter(signal => lowerMessage.includes(signal)).length;
+
+    if (evaluationScore > 0) {
+      return 'evaluation';
+    } else if (hiringScore > advisoryScore && hiringScore > learningScore) {
+      return 'hiring';
+    } else if (advisoryScore > learningScore) {
+      return 'advisory';
+    } else {
+      return 'learning';
+    }
+  };
+
+  const getEvaluationResponse = (message) => {
+    const lowerMessage = message.toLowerCase();
+    
+    if (lowerMessage.includes('director') || lowerMessage.includes('revenue') || 
+        lowerMessage.includes('marketing') || lowerMessage.includes('operations') ||
+        lowerMessage.includes('sales') || lowerMessage.includes('strategy')) {
+      
+      return `Yes, I'd be happy to help you evaluate Michael's fit for the role! 
+
+Michael brings 15 years of strategic leadership experience with a proven track record of driving measurable results. His recent accomplishments include:
+
+• **Revenue Growth**: 100%+ sales growth in 12 months as Director of Business Enablement
+• **Market Expansion**: Scaled from 3 to 26 metro regions, generating 18% new revenue
+• **Process Innovation**: Built pricing tools that improved deal conversion by 150%
+• **Cross-Functional Leadership**: Successfully aligned product, engineering, operations, marketing, and finance teams
+• **AI Implementation**: Led strategic technology adoption with 3x speed improvements
+
+To give you the most relevant insights about Michael's fit, could you share more details about the specific role and key challenges you're looking to address? This will help me highlight the most relevant aspects of his experience and approach.`;
+    
+    } else {
+      return `Yes, I'd be happy to help you evaluate whether Michael would be a good fit! 
+
+To give you the most relevant insights, could you tell me more about the role and what you're looking for? For example:
+• What's the position title and key responsibilities?
+• What are the main challenges or goals for this role?
+• What size organization and industry?
+
+Once I understand more about the specific requirements, I can share the most relevant aspects of Michael's 15 years of experience and his track record of driving measurable results in similar situations. If the role falls outside his core areas of expertise, I'll let you know that I should connect with Michael directly to discuss the opportunity.`;
+    }
+  };
+
+  const getBackgroundResponse = (intent) => {
+    let backgroundText = `Michael brings 15 years of strategic leadership experience across diverse industries and organization types—from lean startups to multinational corporations with roots dating back to the 1800s. He's built his reputation around a consistent, data-driven approach that turns complex challenges into competitive advantages.
+
+**Core Experience:**
+• **Current Role**: Director of Business Enablement at a 20-26 person tech startup (2021-Present)
+• **Consulting Background**: 7+ years running strategic advisory engagements (3-12 months typically)
+• **Industry Range**: Tech startups, B2B SaaS, environmental services, healthcare, luxury retail, emergency services
+
+**What Sets Him Apart:**
+Michael isn't your typical marketing leader—he's someone who moves the needle through individual contributions that amplify entire teams. His three core principles are:
+
+**1. Moving the Needle**: Cuts through complexity to find actionable opportunities that translate directly into measurable results
+**2. Building Winning Cultures**: Creates environments where high performance becomes natural, not exceptional  
+**3. Helping Others Improve**: Designs systems and processes that help people focus and execute with his philosophy that "winning is fun, and we're all in it together"
+
+His **Theory-to-Execution Methodology** has consistently delivered results: 100%+ sales growth, geographic expansion from 3 to 26 markets, $7M ARR scaling for consulting clients, and pioneering AI implementations with 3x speed improvements.`;
+
+    if (intent === 'hiring') {
+      backgroundText += "\n\nThis combination of strategic vision, hands-on execution, and culture-building makes him particularly valuable for director-level roles where you need someone who can bridge strategy and execution while building sustainable competitive advantages.";
+    } else if (intent === 'advisory') {
+      backgroundText += "\n\nHis systematic approach to transformation—from identifying opportunities to implementing solutions to building organizational alignment—has proven effective across diverse business challenges and industries.";
+    } else if (intent === 'evaluation') {
+      backgroundText += "\n\nThis breadth of experience combined with his systematic approach to driving results makes him adaptable to various organizational needs and challenges.";
+    }
+    
+    backgroundText += "\n\nWould you like me to share a specific example of how he's applied this approach, or would you prefer to explore a particular aspect of his experience in more depth?";
+    
+    return backgroundText;
+  };
+
+  const getTeamBuildingResponse = (intent) => {
+    let teamText = `Michael's approach to building high-performing teams centers on servant-leadership combined with data-driven decision making.
+
+**His Leadership Philosophy:**
+
+**Servant-Leadership Foundation**: Michael leads by supporting his team, ensuring they have the information and tools they need to be at their best. He focuses on removing obstacles and providing resources rather than micromanaging.
+
+**Data-First Decision Making**: While maintaining a servant-leadership style, Michael ensures this doesn't slow down critical decisions. By being data-first in all things, he creates clarity that enables fast, confident decision-making across the team.
+
+**Shared Goals & Motivation Alignment**: He instills his team with a deep understanding of their shared goals and his motivations for improving collective outcomes. Everyone knows not just what they're doing, but why it matters.
+
+**Positive Culture Building**: Michael creates a corporate culture that celebrates both personal achievement and team wins. He believes in recognizing individual contributions while reinforcing how they connect to team success.
+
+**North Star Clarity**: Every team member understands how their role contributes to team success and has a clear 'north star' for staying the course to strategic success. This creates alignment without constant oversight.
+
+**The Result**: Teams that are empowered to make decisions, clear on their purpose, and motivated by both individual growth and collective achievement. This approach creates high performance through engagement rather than pressure.`;
+
+    if (intent === 'hiring') {
+      teamText += "\n\nThis leadership approach is particularly valuable for director-level roles where you need someone who can build autonomous, high-performing teams that execute consistently without constant management oversight.";
+    } else if (intent === 'advisory') {
+      teamText += "\n\nThis servant-leadership approach combined with data-driven clarity helps organizations build sustainable team performance and culture transformation.";
+    } else if (intent === 'evaluation') {
+      teamText += "\n\nThis balanced approach to leadership—supportive yet decisive, individual-focused yet team-oriented—demonstrates Michael's ability to scale team performance effectively.";
+    }
+    
+    return teamText + "\n\nWhat aspects of team leadership and culture-building are most important for your organization's success?";
+  };
+
+  const getMethodologyResponse = (intent) => {
+    let methodText = `Michael's systematic approach to Go-to-Market strategy (which he internally refers to as his "Theory-to-Execution Methodology") is grounded in a fundamental insight: "These days a strategic plan is only an AI prompt away, yet most startups still struggle with sub-par results. Why? It takes more than a plan. You need to plan to win."
+
+The core issue: most strategies fail not because they're wrong, but because they're not built on a cohesive theory of how the strategy will succeed at every step of the buyer's journey.
+
+Michael's framework centers on what he calls the **Six Pillars of Go-to-Market Success**:
+
+**1. What to Sell** (Product-Market Fit): What does a customer want to buy? Focus on product development that aligns with genuine market demand.
+
+**2. Who to Sell** (Decision-Makers & Personas): Who is making the decision to buy? Deep understanding of the people involved in purchase decisions.
+
+**3. How to Sell** (Product Marketing & Marketing Ops): How does a customer want to buy? Optimizing channels and processes that align with customer preferences.
+
+**4. Extend Value** (Inbound Philosophy & Customer Success): How to over-deliver value? Going beyond the sell to provide more value than customers expect—making this part of your organization's identity.
+
+**5. Establish KPIs** (Business Intelligence & Analytics): What to measure to quantify strategic success? Creating systems that allow teams to evaluate progress and adjust tactics.
+
+**6. Ongoing Optimization** (Accountability & Coaching): Business process cadencing and optimization cycle design that keeps teams aligned and continuously improving.
+
+This creates what Michael demonstrates as a "Sustainable, Self-Improving Go-to-Market Engine"—an inbound flywheel with three key stages: **Attract** (inbound marketing, social credibility), **Engage** (account-based marketing, sales enablement), and **Delight** (extended value, customer success).`;
+
+    if (intent === 'hiring') {
+      methodText += "\n\nThis systematic approach to GTM strategy ensures sustainable revenue growth rather than one-off wins, making it particularly valuable for organizations looking to scale systematically.";
+    } else if (intent === 'advisory') {
+      methodText += "\n\nThis methodology transforms organizations by creating alignment around a clear theory of winning, with each pillar reinforcing the others to create compound growth.";
+    } else if (intent === 'evaluation') {
+      methodText += "\n\nThis comprehensive framework demonstrates Michael's ability to create systematic approaches to revenue generation and market success.";
+    }
+    
+    return methodText + "\n\nWhich of these six pillars would be most valuable for your organization's growth strategy?";
+  };
+
+  const getPricingStory = (intent) => {
+    let pricingText = `Picture this: a promising tech startup losing 50% of their market share in just three months. Every pricing request took 1-5 days, deals were slipping away, and competitors were eating their lunch.
+
+The real issue wasn't the pricing itself—it was competitive and fair. The problem was speed. In a fast-moving market, taking days to respond meant losing opportunities before they even started.
+
+Here's what Michael did: Michael didn't just build a tool; he reimagined the entire pricing philosophy. Using their own market data and statistical modeling, he created a mathematical framework that democratized pricing across the organization. But the real magic was in the training—getting everyone aligned on a mission-critical initiative.
+
+Overnight, they went from 24+ hour pricing cycles to instantaneous responses. For the first time, they could offer public pricing, building trust and transparency. Deal conversion jumped 150%—from 8% to 20%.`;
+
+    if (intent === 'hiring') {
+      pricingText += "\n\nThis kind of systematic problem-solving—identifying the real issue, building scalable solutions, and driving organizational alignment—is exactly what Michael brings to director-level roles.";
+    } else if (intent === 'advisory') {
+      pricingText += "\n\nThis demonstrates how Michael's strategic thinking combined with hands-on execution can transform business fundamentals. His approach works whether you're optimizing pricing, streamlining operations, or accelerating growth.";
+    } else {
+      pricingText += "\n\n*Speed isn't just about efficiency; it's about competitive advantage and customer trust.*";
+    }
+    
+    return pricingText + "\n\nWhat other challenges are you curious about?";
+  };
+
+  const getThoughtLeadershipResponse = (intent) => {
+    let thoughtText = `Yes, Michael has established thought leadership through both published content and speaking engagements:
+
+**Published Content:**
+• Featured in Technical.ly article about his work at DrayNow and approach to scaling tech startups
+• Link: https://technical.ly/startups/draynow-uber-truck-drivers-startup-philadelphia/
+
+**Speaking Engagements:**
+• **Philly Tech Week Speaker**: Presented original research on "How to Use QR Codes Effectively" to 50+ business owners and marketing leaders
+• This presentation, based on his empirical research into QR code usage patterns and best practices, directly generated two new business development opportunities
+
+**Research & Analysis:**
+Michael conducts his own empirical research to better understand market trends and business processes. His QR code research distilled practical insights into actionable best practices for integrating QR codes into business operations.`;
+
+    if (intent === 'hiring') {
+      thoughtText += "\n\nThis combination of analytical research, public speaking, and thought leadership demonstrates Michael's ability to not only implement strategies but also contribute to industry knowledge and best practices.";
+    } else if (intent === 'advisory') {
+      thoughtText += "\n\nThis thought leadership approach shows how Michael stays ahead of trends through research and shares insights that drive business development opportunities.";
+    } else if (intent === 'evaluation') {
+      thoughtText += "\n\nThis track record of research, speaking, and published insights demonstrates Michael's commitment to continuous learning and industry leadership.";
+    }
+    
+  const getIntentQualificationResponse = () => {
+    const responses = [
+      "I'd love to share more about Michael's approach to driving results. What specific aspect interests you most—his leadership philosophy, strategic methodology, or perhaps some examples of transformation he's led?",
+      
+      "Michael has quite a track record when it comes to turning challenges into competitive advantages. Are you more curious about his approach to building winning cultures, driving revenue growth, or implementing strategic change?",
+      
+      "There's a lot we could explore about Michael's experience. Would you like to hear about specific transformations he's led, his strategic framework, or how he approaches building high-performing teams?"
+    ];
+    
+    return responses[Math.floor(Math.random() * responses.length)];
+  };
+    const responses = [
+      "I'd love to share more about Michael's approach to driving results. What specific aspect interests you most—his leadership philosophy, strategic methodology, or perhaps some examples of transformation he's led?",
+      
+      "Michael has quite a track record when it comes to turning challenges into competitive advantages. Are you more curious about his approach to building winning cultures, driving revenue growth, or implementing strategic change?",
+      
+      "There's a lot we could explore about Michael's experience. Would you like to hear about specific transformations he's led, his strategic framework, or how he approaches building high-performing teams?"
+    ];
+    
+    return responses[Math.floor(Math.random() * responses.length)];
+  };
+
+  // Context-aware response generation
+  const generateContextualResponse = (message, intent) => {
+    const lowerMessage = message.toLowerCase();
+    
+    // Handle evaluation requests directly
+    if (intent === 'evaluation') {
+      return getEvaluationResponse(message);
+    }
+
+    // Check for specific topics
+    if (lowerMessage.includes('background') || lowerMessage.includes('experience') || lowerMessage.includes('about michael')) {
+      return getBackgroundResponse(intent);
+    } else if (lowerMessage.includes('published') || lowerMessage.includes('speaking') || lowerMessage.includes('thought leadership') ||
+               lowerMessage.includes('articles') || lowerMessage.includes('presentations') || lowerMessage.includes('research')) {
+      return getThoughtLeadershipResponse(intent);
+    } else if (lowerMessage.includes('pricing') || lowerMessage.includes('price')) {
+      return getPricingStory(intent);
+    } else if (lowerMessage.includes('high-performing teams') || lowerMessage.includes('building teams') || 
+               lowerMessage.includes('team building') || lowerMessage.includes('leadership style') ||
+               lowerMessage.includes('management') || lowerMessage.includes('leading teams')) {
+      return getTeamBuildingResponse(intent);
+    } else if (lowerMessage.includes('methodology') || lowerMessage.includes('approach') || lowerMessage.includes('framework') || 
+               lowerMessage.includes('six pillars') || lowerMessage.includes('gtm') || lowerMessage.includes('go-to-market')) {
+      return getMethodologyResponse(intent);
+    } else {
+      return getIntentQualificationResponse();
+    }
+  };
+
+  const handleSubmit = () => {
+    if (!inputValue.trim()) return;
+
+    const userMessage = {
+      type: 'user',
+      content: inputValue,
+      timestamp: new Date()
+    };
+
+    const detectedIntent = classifyIntent(inputValue);
+    setUserIntent(detectedIntent);
+
+    const botResponse = {
+      type: 'bot',
+      content: generateContextualResponse(inputValue, detectedIntent),
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage, botResponse]);
+    setInputValue('');
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
+  const getIntentIcon = () => {
+    switch(userIntent) {
+      case 'evaluation': return <Briefcase className="w-4 h-4 text-orange-600" />;
+      case 'hiring': return <Briefcase className="w-4 h-4 text-green-600" />;
+      case 'advisory': return <Users className="w-4 h-4 text-blue-600" />;
+      case 'learning': return <MessageCircle className="w-4 h-4 text-purple-600" />;
+      default: return <Info className="w-4 h-4 text-gray-600" />;
+    }
+  };
+
+  const getIntentLabel = () => {
+    switch(userIntent) {
+      case 'evaluation': return 'Candidate Evaluation';
+      case 'hiring': return 'Leadership Talent Interest';
+      case 'advisory': return 'Strategic Advisory Interest';  
+      case 'learning': return 'Learning & Discovery';
+      default: return 'Understanding Your Needs';
+    }
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto h-screen flex flex-col bg-gradient-to-br from-slate-50 to-blue-50">
+      {/* Header */}
+      <div className="bg-white shadow-lg border-b border-gray-200 p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Michael Dugas</h1>
+            <p className="text-lg text-gray-600">Strategic Leader | Revenue Growth | Winning Cultures</p>
+            <p className="text-sm text-gray-500 mt-1">Theory-to-Execution Methodology | 15+ Years | Philadelphia, PA</p>
+          </div>
+          <div className="text-right">
+            <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+              {getIntentIcon()}
+              <span>{getIntentLabel()}</span>
+            </div>
+            <div className="text-xs text-gray-500">Strategic AI Assistant</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Chat Area */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        {messages.map((message, index) => (
+          <div key={index} className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <div className={`flex gap-3 max-w-3xl ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                message.type === 'user' ? 'bg-blue-600' : 'bg-gradient-to-r from-purple-600 to-blue-600'
+              }`}>
+                {message.type === 'user' ? <User className="w-4 h-4 text-white" /> : <Bot className="w-4 h-4 text-white" />}
+              </div>
+              <div className={`rounded-2xl px-4 py-3 ${
+                message.type === 'user' 
+                  ? 'bg-blue-600 text-white ml-auto' 
+                  : 'bg-white shadow-md border border-gray-200'
+              }`}>
+                <div className="whitespace-pre-wrap">{message.content}</div>
+                <div className={`text-xs mt-2 ${message.type === 'user' ? 'text-blue-100' : 'text-gray-500'}`}>
+                  {message.timestamp.toLocaleTimeString()}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Quick Action Buttons */}
+      <div className="px-6 py-3 bg-gray-50 border-t border-gray-200">
+        <div className="flex flex-wrap gap-2 mb-3">
+          <button 
+            onClick={() => setInputValue("Tell me about Michael's background")}
+            className="px-3 py-1 bg-white border border-gray-300 rounded-full text-sm hover:bg-gray-50 transition-colors"
+          >
+            Background Overview
+          </button>
+          <button 
+            onClick={() => setInputValue("How does he approach building high-performing teams?")}
+            className="px-3 py-1 bg-white border border-gray-300 rounded-full text-sm hover:bg-gray-50 transition-colors"
+          >
+            Leadership Style
+          </button>
+          <button 
+            onClick={() => setInputValue("What's his GTM methodology?")}
+            className="px-3 py-1 bg-white border border-gray-300 rounded-full text-sm hover:bg-gray-50 transition-colors"
+          >
+            Strategic Framework
+          </button>
+          <button 
+            onClick={() => setInputValue("Michael applied to a job I'm hiring for, can you help me decide if he's a good fit?")}
+            className="px-3 py-1 bg-white border border-gray-300 rounded-full text-sm hover:bg-gray-50 transition-colors"
+          >
+            Candidate Evaluation
+          </button>
+        </div>
+      </div>
+
+      {/* Input Area */}
+      <div className="p-6 bg-white border-t border-gray-200">
+        <div className="flex gap-3">
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="What would you like to explore about Michael's approach to leadership and growth?"
+            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+          <button
+            onClick={handleSubmit}
+            disabled={!inputValue.trim()}
+            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2"
+          >
+            <Send className="w-4 h-4" />
+            Send
+          </button>
+        </div>
+        <div className="text-xs text-gray-500 mt-2 text-center">
+          This AI assistant showcases Michael's strategic approach to leadership, revenue growth, and building winning cultures.
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MichaelDugasAI;
