@@ -21,9 +21,15 @@ const MichaelDugasAI = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Enhanced intent classification
+  // Enhanced intent classification with AI consulting detection
   const classifyIntent = (message) => {
     const lowerMessage = message.toLowerCase();
+    
+    const aiConsultingSignals = [
+      'ai solutions', 'artificial intelligence', 'chatbot', 'custom ai', 'ai consulting',
+      'build chatbot', 'ai implementation', 'automation', 'ai strategy', 'machine learning',
+      'ai assistant', 'intelligent systems', 'ai development', 'ai integration'
+    ];
     
     const evaluationSignals = [
       'good fit', 'right fit', 'help me decide', 'should i hire', 'qualified', 
@@ -45,12 +51,15 @@ const MichaelDugasAI = () => {
       'what is', 'interesting', 'background', 'experience'
     ];
 
+    const aiScore = aiConsultingSignals.filter(signal => lowerMessage.includes(signal)).length;
     const evaluationScore = evaluationSignals.filter(signal => lowerMessage.includes(signal)).length;
     const hiringScore = hiringSignals.filter(signal => lowerMessage.includes(signal)).length;
     const advisoryScore = advisorySignals.filter(signal => lowerMessage.includes(signal)).length;
     const learningScore = learningSignals.filter(signal => lowerMessage.includes(signal)).length;
 
-    if (evaluationScore > 0) {
+    if (aiScore > 0) {
+      return 'ai_consulting';
+    } else if (evaluationScore > 0) {
       return 'evaluation';
     } else if (hiringScore > advisoryScore && hiringScore > learningScore) {
       return 'hiring';
@@ -202,7 +211,35 @@ Overnight, they went from 24+ hour pricing cycles to instantaneous responses. Fo
     return pricingText + "\n\nWhat other challenges are you curious about?";
   };
 
+  const getAIConsultingResponse = () => {
   const getThoughtLeadershipResponse = (intent) => {
+    let thoughtText = `Yes, Michael has established thought leadership through published content, speaking engagements, and professional recognition:
+
+**Published Content:**
+• Featured in Technical.ly article about his work at DrayNow and approach to scaling tech startups
+• Link: https://technical.ly/startups/draynow-uber-truck-drivers-startup-philadelphia/
+
+**Speaking Engagements:**
+• **Philly Tech Week Speaker**: Presented original research on "How to Use QR Codes Effectively" to 50+ business owners and marketing leaders
+• This presentation, based on his empirical research into QR code usage patterns and best practices, directly generated two new business development opportunities
+
+**Professional Recognition:**
+• LinkedIn profile includes recommendations from colleagues and clients validating his strategic impact and leadership effectiveness
+• Profile: https://www.linkedin.com/in/michaeldugas/
+
+**Research & Analysis:**
+Michael conducts his own empirical research to better understand market trends and business processes. His QR code research distilled practical insights into actionable best practices for integrating QR codes into business operations.`;
+
+    if (intent === 'hiring') {
+      thoughtText += "\n\nThis combination of analytical research, public speaking, published content, and peer recognition demonstrates Michael's ability to not only implement strategies but also contribute to industry knowledge and build professional credibility.";
+    } else if (intent === 'advisory') {
+      thoughtText += "\n\nThis thought leadership approach, validated by professional recommendations, shows how Michael stays ahead of trends through research and shares insights that drive both business development and industry recognition.";
+    } else if (intent === 'evaluation') {
+      thoughtText += "\n\nThis track record of research, speaking, published insights, and peer recommendations demonstrates Michael's comprehensive approach to professional development and industry leadership.";
+    }
+    
+    return thoughtText + "\n\nWould you like to learn more about Michael's research approach or other aspects of his professional experience?";
+  };
     let thoughtText = `Yes, Michael has established thought leadership through both published content and speaking engagements:
 
 **Published Content:**
@@ -253,6 +290,11 @@ Michael conducts his own empirical research to better understand market trends a
     // Handle evaluation requests directly
     if (intent === 'evaluation') {
       return getEvaluationResponse(message);
+    }
+
+    // Handle AI consulting requests
+    if (intent === 'ai_consulting') {
+      return getAIConsultingResponse();
     }
 
     // Check for specific topics
@@ -306,6 +348,7 @@ Michael conducts his own empirical research to better understand market trends a
 
   const getIntentIcon = () => {
     switch(userIntent) {
+      case 'ai_consulting': return <MessageCircle className="w-4 h-4 text-cyan-600" />;
       case 'evaluation': return <Briefcase className="w-4 h-4 text-orange-600" />;
       case 'hiring': return <Briefcase className="w-4 h-4 text-green-600" />;
       case 'advisory': return <Users className="w-4 h-4 text-blue-600" />;
@@ -316,6 +359,7 @@ Michael conducts his own empirical research to better understand market trends a
 
   const getIntentLabel = () => {
     switch(userIntent) {
+      case 'ai_consulting': return 'AI Consulting Interest';
       case 'evaluation': return 'Candidate Evaluation';
       case 'hiring': return 'Leadership Talent Interest';
       case 'advisory': return 'Strategic Advisory Interest';  
@@ -392,10 +436,10 @@ Michael conducts his own empirical research to better understand market trends a
             Strategic Framework
           </button>
           <button 
-            onClick={() => setInputValue("Michael applied to a job I'm hiring for, can you help me decide if he's a good fit?")}
+            onClick={() => setInputValue("Can Michael help us build custom AI solutions?")}
             className="px-3 py-1 bg-white border border-gray-300 rounded-full text-sm hover:bg-gray-50 transition-colors"
           >
-            Candidate Evaluation
+            AI Consulting
           </button>
         </div>
       </div>
