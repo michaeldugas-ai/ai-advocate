@@ -241,6 +241,61 @@ Would you like to learn more about Michael's research approach or other aspects 
             }
           };
 
+          const generateConversationSummary = () => {
+            const userMessages = messages.filter(msg => msg.type === 'user').map(msg => msg.content);
+            const botMessages = messages.filter(msg => msg.type === 'bot').map(msg => msg.content);
+            
+            const summary = `CONVERSATION SUMMARY - ${new Date().toLocaleDateString()}
+Generated from Michael Dugas AI Assistant (${window.location.href})
+
+VISITOR INTEREST: ${getIntentLabel()}
+
+KEY TOPICS DISCUSSED:
+${userMessages.map((msg, i) => `• ${msg}`).join('\n')}
+
+INFORMATION SHARED:
+${botMessages.slice(1).map(msg => {
+  // Extract key points from bot responses
+  if (msg.includes('AI Consulting Services')) return '• AI consulting services and capabilities';
+  if (msg.includes('Leadership Philosophy')) return '• Leadership and team-building approach';
+  if (msg.includes('Six Pillars')) return '• Strategic GTM methodology';
+  if (msg.includes('Background')) return '• Professional background and experience';
+  if (msg.includes('thought leadership')) return '• Published content and speaking engagements';
+  return null;
+}).filter(Boolean).join('\n')}
+
+NEXT STEPS: Contact Michael on LinkedIn (https://www.linkedin.com/in/michaeldugas/) to continue the conversation.
+
+---
+This summary was generated to help provide context when connecting with Michael Dugas.`;
+
+            return summary;
+          };
+
+          const copyToClipboard = async (text) => {
+            try {
+              await navigator.clipboard.writeText(text);
+              return true;
+            } catch (err) {
+              return false;
+            }
+          };
+
+          const handleGenerateSummary = async () => {
+            const summary = generateConversationSummary();
+            const success = await copyToClipboard(summary);
+            
+            const summaryMessage = {
+              type: 'bot',
+              content: success 
+                ? "Perfect! I've generated a conversation summary and copied it to your clipboard. You can paste this when connecting with Michael on LinkedIn to give him context about your discussion here.\n\nThe summary includes your areas of interest and the key topics we covered, making it easy for Michael to continue the conversation with relevant insights."
+                : "I've generated a conversation summary for you:\n\n" + summary + "\n\nYou can copy this text and include it when connecting with Michael on LinkedIn to provide context about your discussion here.",
+              timestamp: new Date()
+            };
+            
+            setMessages(prev => [...prev, summaryMessage]);
+          };
+
           const getIntentLabel = () => {
             switch(userIntent) {
               case 'ai_consulting': return 'AI Consulting Interest';
@@ -318,7 +373,11 @@ Would you like to learn more about Michael's research approach or other aspects 
                 React.createElement('button', { 
                   onClick: () => setInputValue("Can Michael help us build custom AI solutions?"),
                   className: "px-3 py-1 bg-white border border-gray-300 rounded-full text-sm hover:bg-gray-50 transition-colors"
-                }, "AI Consulting")
+                }, "AI Consulting"),
+                messages.length > 2 ? React.createElement('button', { 
+                  onClick: handleGenerateSummary,
+                  className: "px-3 py-1 bg-blue-600 text-white border border-blue-600 rounded-full text-sm hover:bg-blue-700 transition-colors"
+                }, "Get Conversation Summary") : null
               )
             ),
 
