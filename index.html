@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Michael Dugas' AI Advocate</title>
+    <title>Michael Dugas - AI Assistant</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -12,43 +12,6 @@
 <body>
     <div id="root"></div>
     <script type="text/babel">
-const sendToSheet = async (summary, intent, questions) => {
-  try {
-    await fetch('https://script.google.com/macros/s/AKfycbw_8cWKffirC3W2Zq2igqM3C9mQGZvOI4ZScmQEu87wYLzc7OddOhII1MXr4kZEpjs/exec', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        intent: intent,
-        summary: summary,
-        url: window.location.href,
-        questions: questions
-      })
-    });
-  } catch (error) {
-    // Silent fail - don't disrupt user experience
-    console.log('Analytics tracking failed:', error);
-  }
-};
-
-// Modify your handleGenerateSummary function to include this:
-const handleGenerateSummary = async () => {
-  const summary = generateConversationSummary();
-  const success = await copyToClipboard(summary);
-  
-  // Extract user questions for tracking
-  const userQuestions = messages
-    .filter(msg => msg.type === 'user')
-    .map(msg => msg.content)
-    .join(' | ');
-  
-  // Send to Google Sheet
-  await sendToSheet(summary, getIntentLabel(), userQuestions);
-  
-  // Rest of your existing code...
-};
-        
         const { useState, useRef, useEffect } = React;
 
         const MichaelDugasAI = () => {
