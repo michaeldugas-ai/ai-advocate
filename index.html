@@ -251,7 +251,7 @@ His breadth of experience from startup to enterprise level demonstrates deep, ap
             const evaluativeResponse = handleEvaluativeQuestion(lowerMessage, intent);
             if (evaluativeResponse) return evaluativeResponse;
             
-            // Check for specific skills first
+            // Check for specific skills first - improved detection
             const skillKeywords = {
               'seo': ['seo', 'search engine optimization', 'organic search', 'search rankings'],
               'sem': ['sem', 'search engine marketing', 'paid search', 'google ads', 'ppc'],
@@ -271,11 +271,18 @@ His breadth of experience from startup to enterprise level demonstrates deep, ap
               'leadership': ['leadership style', 'management style', 'leading teams', 'team leadership'],
               'pricing': ['pricing', 'price', 'pricing strategy', 'pricing model'],
               'analytics': ['analytics', 'data analysis', 'business intelligence', 'bi', 'reporting'],
-              'ai': ['ai', 'artificial intelligence', 'machine learning', 'automation']
+              'ai': ['ai', 'artificial intelligence', 'machine learning', 'automation', 'ai experience', 'experience with ai', 'about.*ai', 'his.*ai']
             };
             
             for (const [skill, keywords] of Object.entries(skillKeywords)) {
-              if (keywords.some(keyword => lowerMessage.includes(keyword))) {
+              // Check for exact matches and contextual patterns
+              const hasDirectMatch = keywords.some(keyword => lowerMessage.includes(keyword));
+              
+              // Special handling for "about/with [skill]" patterns
+              const aboutPattern = new RegExp(`(about|with)\\s+(his\\s+)?(experience\\s+with\\s+)?${skill.replace('_', '\\s*')}`, 'i');
+              const experiencePattern = new RegExp(`(experience|work)\\s+(with|in)\\s+${skill.replace('_', '\\s*')}`, 'i');
+              
+              if (hasDirectMatch || aboutPattern.test(message) || experiencePattern.test(message)) {
                 const skillResponse = getSkillSpecificResponse(skill, intent);
                 if (skillResponse) return skillResponse;
               }
@@ -378,6 +385,24 @@ Would you like me to share a specific example of how he's applied this approach,
 What aspects of team leadership and culture-building are most important for your organization's success?`;
             }
 
+            // If we get here, no skill was detected. Check for experience/about patterns
+            if (lowerMessage.includes('experience') || lowerMessage.includes('about') || lowerMessage.includes('what about')) {
+              // Try to extract potential skill from the question
+              const words = lowerMessage.split(/\s+/);
+              const skillWords = ['marketing', 'sales', 'strategy', 'leadership', 'management', 'data', 'technology', 'consulting'];
+              const mentionedSkill = skillWords.find(skill => lowerMessage.includes(skill));
+              
+              if (mentionedSkill) {
+                const skillKey = `general_${mentionedSkill}`;
+                if (!usedResponses.has(skillKey)) {
+                  setUsedResponses(prev => new Set([...prev, skillKey]));
+                  return `Michael has extensive ${mentionedSkill} experience across his 15-year career. He's delivered measurable results including 100%+ sales growth, geographic expansion from 3 to 26 markets, and successful implementations across diverse industries. Would you like to know about specific ${mentionedSkill} projects or methodologies he's used?`;
+                }
+              }
+              
+              return `I'd be happy to share details about Michael's experience. Could you be more specific about which area interests you most? For example: his leadership style, strategic approach, specific skills like AI or sales enablement, or particular industry experience?`;
+            }
+
             // Default varied responses
             const defaultResponses = [
               "What specific aspect of Michael's experience interests you most?",
@@ -459,7 +484,7 @@ This summary was generated to help provide context when connecting with Michael 
 
           const sendToSheet = async (summary, intent, questions) => {
             try {
-              await fetch('https://script.google.com/macros/s/AKfycbxxtNJ1crphlbdavn9_q4UW39Bx-3eQF1wPk4L0h1UeOnm6BooTwkg8e6BWbEa1h8OI/exec', {
+              await fetch('YOUR_APPS_SCRIPT_URL_HERE', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
