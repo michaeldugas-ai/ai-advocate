@@ -24,7 +24,6 @@
           ]);
           const [inputValue, setInputValue] = useState('');
           const [userIntent, setUserIntent] = useState('unknown');
-          const [usedResponses, setUsedResponses] = useState(new Set());
           const messagesEndRef = useRef(null);
 
           const scrollToBottom = () => {
@@ -88,75 +87,20 @@
                 response: `Michael combines SEM with broader digital strategy. For a transportation safety company, he used performance data from SEM campaigns to inform content marketing strategy, achieving 200% sales increase with 40% reduced SEM spend. He's also managed $1M+ in annual cross-channel ad spend across search, social, display, and programmatic.`,
                 short: `Michael has managed $1M+ in annual ad spend and achieved 200% sales growth by integrating SEM data with content marketing strategy.`
               },
-
-              email_marketing: {
-                response: `Michael has implemented email marketing as part of integrated digital strategies. In his market expansion work, he built cross-functional GTM playbooks that included email marketing campaigns to support scaling from 3 to 26 metro regions, contributing to 18% new revenue growth.`,
-                short: `Michael integrated email marketing into GTM playbooks that helped scale from 3 to 26 markets with 18% new revenue.`
+              
+              pricing: {
+                response: `Michael transformed a pricing crisis into competitive advantage. When a startup was losing 50% market share due to 24+ hour pricing cycles, he built a mathematical pricing model using market data statistics. Result: instantaneous pricing, public pricing capability, and deal conversion jumped 150% from 8% to 20%.`,
+                short: `Michael built a real-time pricing tool that improved deal conversion by 150% and eliminated 24+ hour pricing delays.`
               },
-
-              marketing_automation: {
-                response: `Michael has extensive experience with marketing automation platforms including HubSpot and Salesforce. He's certified in HubSpot Marketing Automation and has used these tools to streamline BI ticketing (40% faster response times) and build automated funnels that tripled app user base while reducing CAC by 61%.`,
-                short: `Michael is HubSpot certified and used marketing automation to triple app users while reducing CAC by 61%.`
+              
+              analytics: {
+                response: `Michael uses business intelligence to drive strategic decisions. He established KPIs and reporting cadences that improved organizational focus, led AI adoption achieving 3x speed improvements in BI queries, and founded a Data Governance Committee for strategic AI implementation.`,
+                short: `Michael led AI adoption achieving 3x BI query speed improvements and established data governance frameworks for strategic decision-making.`
               },
-
-              abm: {
-                response: `Michael has deployed account-based marketing as part of his comprehensive GTM strategies. His Six Pillars framework specifically incorporates ABM in the "Engage" stage of the inbound flywheel, combining it with conversion analysis and sales enablement for targeted prospect engagement.`,
-                short: `Michael incorporates ABM into his Six Pillars GTM framework as part of strategic prospect engagement and sales enablement.`
-              },
-
-              sales_enablement: {
-                response: `Michael has driven significant sales enablement results, including 100%+ sales growth in 12 months through establishing KPIs and operating rhythms that enhanced customer alignment. He built a self-serve pricing tool that enabled real-time quotes and improved deal conversion by 150%. He's also HubSpot certified in Sales Management and Sales Enablement.`,
-                short: `Michael drove 100%+ sales growth through sales enablement, including a pricing tool that improved deal conversion by 150%.`
-              },
-
-              process_design: {
-                response: `Michael excels at process design that drives results. He designed mathematical pricing models, cross-functional GTM playbooks for market expansion, and Data Governance Committee SOPs. His process design enabled scaling from 3 to 26 markets and democratized pricing across entire organizations.`,
-                short: `Michael designed processes that enabled 3-to-26 market scaling and democratized organizational pricing capabilities.`
-              },
-
-              process_optimization: {
-                response: `Michael's process optimization work includes cutting BI ticketing response times by 40% through Slack integration, reducing quote turnaround from 24+ hours to real-time, and achieving 3x speed improvements in BI queries through strategic AI implementation and workflow optimization.`,
-                short: `Michael optimized processes to achieve 40% faster BI responses and real-time pricing from 24+ hour cycles.`
-              },
-
-              cross_functional: {
-                response: `Michael excels at cross-functional leadership. He successfully aligned product, engineering, operations, marketing, and finance teams for market expansion. He built cross-functional GTM playbooks and established operating rhythms that improved organizational focus and execution across diverse teams.`,
-                short: `Michael aligned product, engineering, operations, marketing, and finance teams for successful market expansion initiatives.`
-              },
-
-              content_marketing: {
-                response: `Michael has used content marketing to drive organic growth across multiple projects. For the emergency dental client, he built content strategies that generated nationwide leads with zero ad spend. He also developed multi-domain content marketing strategies informed by SEM performance data, achieving 200% sales growth.`,
-                short: `Michael built content marketing strategies that generated nationwide organic leads and achieved 200% sales growth.`
-              },
-
-              funnel_optimization: {
-                response: `Michael rebuilt inbound campaigns, landing pages, and funnels to focus value for target audiences, enabling end-to-end attribution. This funnel optimization work tripled app user base while reducing CAC by 61% and set the foundation for scaling into new markets.`,
-                short: `Michael's funnel optimization tripled app users while reducing CAC by 61% through rebuilt campaigns and attribution systems.`
-              },
-
-              gtm_strategy: {
-                response: `Michael's go-to-market expertise includes his Six Pillars framework and multiple successful implementations. He scaled geographic reach from 3 to 26 metro areas through cross-functional GTM playbooks, contributing 18% new revenue. He's also helped clients scale from zero to $8M ARR through tailored GTM strategies.`,
-                short: `Michael scaled markets from 3 to 26 areas (18% new revenue) and helped clients reach $8M ARR through GTM strategies.`
-              },
-
-              strategy: {
-                response: `Michael brings strategic thinking through his Theory-to-Execution Methodology and Six Pillars framework. He's reversed 50% market share decline by repositioning brands, identified untapped market opportunities worth 18% new revenue, and developed strategic theories of winning that align entire organizations.`,
-                short: `Michael reversed 50% market share decline and identified opportunities worth 18% new revenue through strategic repositioning.`
-              },
-
-              coaching: {
-                response: `Michael's coaching approach focuses on helping teams understand how their roles contribute to organizational success. He coached teams on customer buying journeys at a startup, leading to market share recovery. He also trains organizations on new tools and processes, like the pricing model that democratized pricing capabilities.`,
-                short: `Michael coaches teams on customer alignment and trains organizations on new tools, achieving market share recovery and capability building.`
-              },
-
-              training: {
-                response: `Michael has trained entire organizations on critical initiatives. He trained teams on using the mathematical pricing model he developed, democratizing pricing across the organization. He also trains teams on his Six Pillars GTM methodology and has presented research findings to 50+ business leaders at Philly Tech Week.`,
-                short: `Michael trained entire organizations on pricing models and presented research to 50+ business leaders at Philly Tech Week.`
-              },
-
-              leadership: {
-                response: `Michael's leadership combines servant-leadership with data-driven decision making. He creates cultures where teams are empowered to make decisions, clear on their purpose, and motivated by both individual growth and collective achievement. His approach builds high performance through engagement rather than pressure.`,
-                short: `Michael uses servant-leadership with data-driven clarity to build empowered, high-performing teams focused on collective achievement.`
+              
+              ai: {
+                response: `Michael has a track record of spearheading AI initiatives with significant organizational impact. At his recent role, he led organization-wide AI adoption that achieved 3x speed improvements in BI queries and content generation. He established a Data Governance Committee with SOPs and security protocols, ensuring strategic, secure AI integration rather than ad-hoc adoption. He integrated AI assistants into marketing operations and business intelligence teams' daily workflows while maintaining data integrity and security. This AI assistant you're using is an example of his practical AI implementation approach.`,
+                short: `Michael achieved 3x AI speed improvements through strategic implementation and built this AI assistant as an example of practical AI application.`
               }
             };
             
@@ -172,7 +116,7 @@
                 setUsedResponses(prev => new Set([...prev, shortKey]));
                 return skillData.short + (intent === 'hiring' ? "\n\nThis systematic approach to leveraging tools for measurable results is what Michael brings to leadership roles." : "");
               }
-              return `Michael has specific experience with ${skill.replace('_', ' ')}. Would you like to know about other areas of his expertise?`;
+              return `Michael has specific experience with ${skill.toUpperCase()}. Would you like to know about other areas of his expertise?`;
             }
             
             setUsedResponses(prev => new Set([...prev, responseKey]));
@@ -251,7 +195,7 @@ His breadth of experience from startup to enterprise level demonstrates deep, ap
             const evaluativeResponse = handleEvaluativeQuestion(lowerMessage, intent);
             if (evaluativeResponse) return evaluativeResponse;
             
-            // Check for specific skills first - improved detection
+            // Check for specific skills first
             const skillKeywords = {
               'seo': ['seo', 'search engine optimization', 'organic search', 'search rankings'],
               'sem': ['sem', 'search engine marketing', 'paid search', 'google ads', 'ppc'],
@@ -271,18 +215,11 @@ His breadth of experience from startup to enterprise level demonstrates deep, ap
               'leadership': ['leadership style', 'management style', 'leading teams', 'team leadership'],
               'pricing': ['pricing', 'price', 'pricing strategy', 'pricing model'],
               'analytics': ['analytics', 'data analysis', 'business intelligence', 'bi', 'reporting'],
-              'ai': ['ai', 'artificial intelligence', 'machine learning', 'automation', 'ai experience', 'experience with ai', 'about.*ai', 'his.*ai']
+              'ai': ['ai', 'artificial intelligence', 'machine learning', 'automation']
             };
             
             for (const [skill, keywords] of Object.entries(skillKeywords)) {
-              // Check for exact matches and contextual patterns
-              const hasDirectMatch = keywords.some(keyword => lowerMessage.includes(keyword));
-              
-              // Special handling for "about/with [skill]" patterns
-              const aboutPattern = new RegExp(`(about|with)\\s+(his\\s+)?(experience\\s+with\\s+)?${skill.replace('_', '\\s*')}`, 'i');
-              const experiencePattern = new RegExp(`(experience|work)\\s+(with|in)\\s+${skill.replace('_', '\\s*')}`, 'i');
-              
-              if (hasDirectMatch || aboutPattern.test(message) || experiencePattern.test(message)) {
+              if (keywords.some(keyword => lowerMessage.includes(keyword))) {
                 const skillResponse = getSkillSpecificResponse(skill, intent);
                 if (skillResponse) return skillResponse;
               }
@@ -440,90 +377,6 @@ What aspects of team leadership and culture-building are most important for your
               e.preventDefault();
               handleSubmit();
             }
-          };
-
-          const generateConversationSummary = () => {
-            const userMessages = messages.filter(msg => msg.type === 'user').map(msg => msg.content);
-            const botMessages = messages.filter(msg => msg.type === 'bot').map(msg => msg.content);
-            
-            const summary = `CONVERSATION SUMMARY - ${new Date().toLocaleDateString()}
-Generated from Michael Dugas AI Assistant (${window.location.href})
-
-VISITOR INTEREST: ${getIntentLabel()}
-
-KEY TOPICS DISCUSSED:
-${userMessages.map((msg, i) => `• ${msg}`).join('\n')}
-
-INFORMATION SHARED:
-${botMessages.slice(1).map(msg => {
-  // Extract key points from bot responses
-  if (msg.includes('AI Consulting Services')) return '• AI consulting services and capabilities';
-  if (msg.includes('Leadership Philosophy')) return '• Leadership and team-building approach';
-  if (msg.includes('Six Pillars')) return '• Strategic GTM methodology';
-  if (msg.includes('Background')) return '• Professional background and experience';
-  if (msg.includes('thought leadership')) return '• Published content and speaking engagements';
-  return null;
-}).filter(Boolean).join('\n')}
-
-NEXT STEPS: Contact Michael on LinkedIn (https://www.linkedin.com/in/michaeldugas/) to continue the conversation.
-
----
-This summary was generated to help provide context when connecting with Michael Dugas.`;
-
-            return summary;
-          };
-
-          const copyToClipboard = async (text) => {
-            try {
-              await navigator.clipboard.writeText(text);
-              return true;
-            } catch (err) {
-              return false;
-            }
-          };
-
-          const sendToSheet = async (summary, intent, questions) => {
-            try {
-              await fetch('https://script.google.com/macros/s/AKfycbw_8cWKffirC3W2Zq2igqM3C9mQGZvOI4ZScmQEu87wYLzc7OddOhII1MXr4kZEpjs/exec', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  intent: intent,
-                  summary: summary,
-                  url: window.location.href,
-                  questions: questions
-                })
-              });
-            } catch (error) {
-              // Silent fail - don't disrupt user experience
-              console.log('Analytics tracking failed:', error);
-            }
-          };
-
-          const handleGenerateSummary = async () => {
-            const summary = generateConversationSummary();
-            const success = await copyToClipboard(summary);
-            
-            // Extract user questions for tracking
-            const userQuestions = messages
-              .filter(msg => msg.type === 'user')
-              .map(msg => msg.content)
-              .join(' | ');
-            
-            // Send to Google Sheet
-            await sendToSheet(summary, getIntentLabel(), userQuestions);
-            
-            const summaryMessage = {
-              type: 'bot',
-              content: success 
-                ? "Perfect! I've generated a conversation summary and copied it to your clipboard. You can paste this when connecting with Michael on LinkedIn to give him context about your discussion here.\n\nThe summary includes your areas of interest and the key topics we covered, making it easy for Michael to continue the conversation with relevant insights."
-                : "I've generated a conversation summary for you:\n\n" + summary + "\n\nYou can copy this text and include it when connecting with Michael on LinkedIn to provide context about your discussion here.",
-              timestamp: new Date()
-            };
-            
-            setMessages(prev => [...prev, summaryMessage]);
           };
 
           const getIntentLabel = () => {
