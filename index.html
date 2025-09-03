@@ -179,8 +179,77 @@
             return skillData.response + (intent === 'hiring' ? "\n\nThis systematic approach to leveraging tools for measurable results is what Michael brings to leadership roles." : "");
           };
 
+          const handleEvaluativeQuestion = (lowerMessage, intent) => {
+            // Detect yes/no evaluative questions
+            const evaluativePatterns = [
+              'is michael a good', 'is he a good', 'would michael be a good',
+              'is michael effective', 'is he effective', 'does michael have',
+              'can michael', 'would he be', 'is michael experienced'
+            ];
+            
+            const isEvaluative = evaluativePatterns.some(pattern => lowerMessage.includes(pattern));
+            if (!isEvaluative) return null;
+            
+            // Management/Leadership questions
+            if (lowerMessage.includes('manager') || lowerMessage.includes('leader')) {
+              return `Yes, Michael is an effective manager. His track record demonstrates strong management capabilities:
+
+**Results-Driven Management**: He drove 100%+ sales growth in 12 months and successfully expanded market reach from 3 to 26 metro regions, generating 18% new revenue.
+
+**Team Empowerment**: His servant-leadership approach focuses on providing teams with the information and tools they need while maintaining data-driven decision making for speed and clarity.
+
+**Cross-Functional Success**: He successfully aligned product, engineering, operations, marketing, and finance teams for complex initiatives like market expansion and AI implementation.
+
+**Culture Building**: He creates environments where winning becomes natural through positive reinforcement and clear north star alignment.
+
+His philosophy that "winning is fun, and we're all in it together" combined with measurable results suggests strong managerial effectiveness.`;
+            }
+            
+            // Strategic questions
+            if (lowerMessage.includes('strategic') || lowerMessage.includes('strategist')) {
+              return `Yes, Michael is a strong strategic thinker. Evidence includes:
+
+**Framework Development**: Created the Six Pillars of Go-to-Market Success and Theory-to-Execution Methodology
+**Market Insights**: Identified untapped market opportunities worth 18% new revenue that others overlooked
+**Problem Solving**: Reversed 50% market share decline through strategic repositioning
+**Systems Thinking**: Built scalable playbooks and processes that enabled systematic growth
+
+His approach goes beyond tactics to create comprehensive theories of winning that drive organizational success.`;
+            }
+            
+            // Results/Performance questions  
+            if (lowerMessage.includes('effective') || lowerMessage.includes('successful') || lowerMessage.includes('good at')) {
+              return `Yes, Michael consistently delivers strong results. His effectiveness is demonstrated through:
+
+**Measurable Outcomes**: 100%+ sales growth, 150% deal conversion improvement, 3x AI speed improvements
+**Scale Achievements**: Geographic expansion from 3 to 26 markets, $8M ARR client scaling
+**Innovation**: Real-time pricing tools, Data Governance Committee, practical AI implementation
+**Versatility**: Success across diverse industries from startups to multinational corporations
+
+The combination of consistent results and systematic approaches indicates high effectiveness across multiple domains.`;
+            }
+            
+            // Experience questions
+            if (lowerMessage.includes('experienced') || lowerMessage.includes('qualified')) {
+              return `Yes, Michael has extensive relevant experience. His qualifications include:
+
+**15 Years**: Strategic leadership across diverse industries and organization types
+**Proven Track Record**: Multiple successful transformations with measurable results  
+**Technical Expertise**: HubSpot/Salesforce certifications, AI implementation, data governance
+**Thought Leadership**: Published content, speaking engagements, peer recognition
+
+His breadth of experience from startup to enterprise level demonstrates deep, applicable expertise.`;
+            }
+            
+            return null;
+          };
+
           const generateResponse = (message, intent) => {
             const lowerMessage = message.toLowerCase();
+            
+            // Handle evaluative questions first
+            const evaluativeResponse = handleEvaluativeQuestion(lowerMessage, intent);
+            if (evaluativeResponse) return evaluativeResponse;
             
             // Check for specific skills first
             const skillKeywords = {
