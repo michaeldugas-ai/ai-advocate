@@ -1,3 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Michael Dugas - AI Assistant</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useRef, useEffect } = React;
+
+        const MichaelDugasAI = () => {
+          const [messages, setMessages] = useState([
+            {
+              type: 'bot',
+              content: "Hi! I'm here to share insights about Michael Dugas and his approach to driving revenue growth and building winning cultures.\n\nBefore we dive in, I'm curious—what brings you here today? Are you exploring leadership talent for your organization, considering strategic advisory support, interested in AI consulting solutions, or perhaps just learning about innovative approaches to business growth?",
+              timestamp: new Date()
+            }
+          ]);
+          const [inputValue, setInputValue] = useState('');
+          const [userIntent, setUserIntent] = useState('unknown');
+          const [usedResponses, setUsedResponses] = useState(new Set());
+          const messagesEndRef = useRef(null);
+
+          const scrollToBottom = () => {
+            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+          };
+
+          useEffect(() => {
+            scrollToBottom();
+          }, [messages]);
+
+          const classifyIntent = (message) => {
+            const lowerMessage = message.toLowerCase();
+            
+            const aiConsultingSignals = [
+              'ai solutions', 'artificial intelligence', 'chatbot', 'custom ai', 'ai consulting',
+              'build chatbot', 'ai implementation', 'automation', 'ai strategy', 'machine learning',
+              'ai assistant', 'intelligent systems', 'ai development', 'ai integration'
+            ];
+            
+            const evaluationSignals = [
+              'good fit', 'right fit', 'help me decide', 'should i hire', 'qualified', 
+              'applied to', 'candidate for', 'interviewing', 'considering', 'evaluate'
+            ];
+            
+            const hiringSignals = [
+              'hire', 'hiring', 'position', 'role', 'job', 'director', 'full-time', 
+              'employment', 'team', 'organization', 'company', 'looking for', 'candidate'
+            ];
+            
+            const advisorySignals = [
+              'advisory', 'consultant', 'consulting', 'project', 'help with', 'need expertise',
+              'strategic', 'guidance', 'growth', 'revenue', 'strategy', 'optimization'
+            ];
+
+            const aiScore = aiConsultingSignals.filter(signal => lowerMessage.includes(signal)).length;
+            const evaluationScore = evaluationSignals.filter(signal => lowerMessage.includes(signal)).length;
+            const hiringScore = hiringSignals.filter(signal => lowerMessage.includes(signal)).length;
+            const advisoryScore = advisorySignals.filter(signal => lowerMessage.includes(signal)).length;
+
+            if (aiScore > 0) {
+              return 'ai_consulting';
+            } else if (evaluationScore > 0) {
+              return 'evaluation';
+            } else if (hiringScore > advisoryScore) {
+              return 'hiring';
+            } else if (advisoryScore > 0) {
+              return 'advisory';
+            } else {
+              return 'learning';
+            }
+          };
+
+          const sendToSheet = async (summary, intent, questions) => {
+            try {
+              await fetch('https://script.google.com/macros/s/AKfycbw1gpCuKiipDg4RAlPlWCQFhkubzJNoumaK8R2jsZHG8dLth5TKnWFXX37sTcYfqG5D/exec', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  intent: intent,
+                  summary: summary,
+                  url: window.location.href,
+                  questions: questions
+                })
+              });
+            } catch (error) {
+              console.log('Analytics tracking failed:', error);
+            }
+          };
+
+          const getSkillSpecificResponse = (skill, intent) => {
+            const skillResponses = {
+              seo: {
+                response: `Michael has extensive SEO expertise with proven organic growth results. He built a nationwide emergency dental lead engine that generated dozens of high-value leads daily from 50+ metro regions using purely organic traffic - zero advertising spend. For a transportation safety company, he used integrated SEM/SEO strategy with performance data from paid campaigns informing content marketing, achieving 200% sales growth while reducing SEM spend by 40%.`,
+                short: `Michael built a nationwide organic lead engine with zero ad spend and achieved 200% sales growth through integrated SEO strategies.`
+              },
+              
+              sem: {
+                response: `Michael combines SEM with strategic digital approaches across multiple successful implementations. He's managed campaigns for luxury appliance retailers using Adobe Commerce integration, transportation safety companies achieving 200% growth, and DrayNow where he rebuilt campaigns and landing pages that tripled app user base while reducing CAC by 61%. He manages complex attribution systems across GoogleAds, MicrosoftAds, and Meta platforms.`,
+                short: `Michael rebuilt SEM campaigns that tripled app users while reducing CAC by 61% and achieved 200% sales growth for e-commerce clients.`
+              },
+
+              email_marketing: {
+                response: `Michael has implemented email marketing across complex multi-channel campaigns. At DrayNow, he integrated email marketing with marketing automation using real-time app usage data, reducing manual touchpoints by 30% while maintaining conversion rates. He's deployed email campaigns as part of GTM playbooks for geographic expansion and luxury e-commerce customer acquisition.`,
+                short: `Michael integrated email marketing with app data, reducing manual touchpoints by 30% while maintaining conversion rates.`
+              },
+
+              marketing_automation: {
+                response: `Michael has deep marketing automation expertise, particularly with HubSpot and Salesforce platforms. At DrayNow, he bootstrapped a solution integrating CRM and app user data using SQL and Zapier, enriching marketing automations with real-time usage data. This achieved 30% reduction in manual touchpoints while maintaining user conversion rates. He's deployed automation across multiple client environments for lead nurturing and user onboarding.`,
+                short: `Michael built marketing automation integrations that reduced manual touchpoints by 30% using SQL, Zapier, and real-time data enrichment.`
+              },
+
+              pricing: {
+                response: `Michael transformed pricing from organizational bottleneck to competitive advantage. When DrayNow was losing 50% market share due to 24+ hour pricing cycles, he designed a mathematical pricing model using market data statistics that enabled instantaneous pricing. Deal conversion jumped from 8% to 20% overnight, and they established public pricing capabilities for the first time, building customer trust and transparency.`,
+                short: `Michael built mathematical pricing models that improved deal conversion from 8% to 20% overnight and enabled public pricing capabilities.`
+              },
+
+              ai: {
+                response: `Michael has spearheaded AI initiatives with significant organizational impact across multiple implementations. At DrayNow, he led organization-wide AI adoption achieving 3x speed improvements in BI queries and content generation. He established a Data Governance Committee with SOPs and security protocols, ensuring strategic, secure AI integration rather than ad-hoc adoption. He integrated AI tools into marketing operations and business intelligence teams' daily workflows while maintaining data integrity. This AI assistant you're using demonstrates his practical AI implementation approach.`,
+                short: `Michael achieved 3x AI speed improvements through strategic Data Governance Committee implementation and built this AI assistant as practical application example.`
+              }
+            };
+            
+            const skillData = skillResponses[skill];
+            if (!skillData) return null;
+            
+            const responseKey = `skill_${skill}`;
+            const shortKey = `skill_${skill}_short`;
+            
+            if (usedResponses.has(responseKey)) {
+              if (!usedResponses.has(shortKey)) {
+                setUsedResponses(prev => new Set([...prev, shortKey]));
+                return skillData.short + (intent === 'hiring' ? "\n\nThis systematic approach to leveraging tools for measurable results is what Michael brings to leadership roles." : "");
+              }
+              return `Michael has specific experience with ${skill.replace('_', ' ')}. Would you like to know about other areas of his expertise?`;
+            }
+            
+            setUsedResponses(prev => new Set([...prev, responseKey]));
+            return skillData.response + (intent === 'hiring' ? "\n\nThis systematic approach to leveraging tools for measurable results is what Michael brings to leadership roles." : "");
+          };
+
+          const handleEvaluativeQuestion = (lowerMessage, intent) => {
+            const evaluativePatterns = [
+              'is michael a good', 'is he a good', 'would michael be a good',
+              'is michael effective', 'is he effective', 'does michael have',
+              'can michael', 'would he be', 'is michael experienced'
+            ];
+            
+            const isEvaluative = evaluativePatterns.some(pattern => lowerMessage.includes(pattern));
+            if (!isEvaluative) return null;
+            
+            if (lowerMessage.includes('manager') || lowerMessage.includes('leader')) {
+              return `Yes, Michael is an effective manager. His track record demonstrates strong management capabilities:
+
+**Results-Driven Management**: He drove 100%+ sales growth in 12 months and successfully expanded market reach from 3 to 26 metro regions, generating 18% new revenue.
+
+**Team Empowerment**: His servant-leadership approach focuses on providing teams with the information and tools they need while maintaining data-driven decision making for speed and clarity.
+
+**Cross-Functional Success**: He successfully aligned product, engineering, operations, marketing, and finance teams for complex initiatives like market expansion and AI implementation.
+
+His philosophy that "winning is fun, and we're all in it together" combined with measurable results suggests strong managerial effectiveness.`;
+            }
+            
+            return `Yes, Michael consistently delivers strong results. His effectiveness is demonstrated through:
+
+**Measurable Outcomes**: 100%+ sales growth, 150% deal conversion improvement, 3x AI speed improvements
+**Scale Achievements**: Geographic expansion from 3 to 26 markets, $8M ARR client scaling
+**Innovation**: Real-time pricing tools, Data Governance Committee, practical AI implementation
+
+The combination of consistent results and systematic approaches indicates high effectiveness across multiple domains.`;
+          };
+
+          const generateResponse = (message, intent) => {
+            const lowerMessage = message.toLowerCase();
+            
+            const evaluativeResponse = handleEvaluativeQuestion(lowerMessage, intent);
+            if (evaluativeResponse) return evaluativeResponse;
+
+            // Handle transformation examples requests
+            if (lowerMessage.includes('transformation') || lowerMessage.includes('examples of transformation') || 
+                lowerMessage.includes('case studies') || lowerMessage.includes('success stories')) {
+              const transformKey = 'transformation_examples';
+              if (usedResponses.has(transformKey)) {
+                return `Here's another transformation example:\n\n**Emergency Dental Lead Generation (2019-2020)**\nMichael built a nationwide organic lead engine from scratch, generating dozens of high-value emergency dental leads daily across 50+ metro regions with zero advertising spend. The system used purely SEO-driven traffic and converted visitors into qualified leads for dental practices.\n\nWould you like to explore the methodology behind these transformations or hear about his leadership philosophy?`;
+              }
+              setUsedResponses(prev => new Set([...prev, transformKey]));
+              return `Here are specific transformation examples that showcase Michael's impact:\n\n**DrayNow Pricing Revolution (2023)**\nWhen Michael joined DrayNow, they were losing 50% market share due to 24+ hour pricing cycles in a real-time industry. Michael designed a mathematical pricing model using market data statistics that enabled instantaneous pricing. Results: Deal conversion jumped from 8% to 20% overnight, and they established public pricing capabilities for the first time.\n\n**Transportation Safety Company Growth (2022)**\nMichael integrated SEM/SEO strategy using performance data from paid campaigns to inform content marketing. This systematic approach achieved 200% sales growth while simultaneously reducing SEM spend by 40%—proving you can grow faster while spending less through strategic optimization.\n\n**Geographic Expansion at DrayNow (2021-2023)**\nMichael led market expansion from 3 to 26 metro regions, building scalable GTM playbooks that generated 18% new revenue. This wasn't just adding markets—it was building repeatable systems that ensured consistent performance across diverse geographic conditions.\n\nWhich of these transformations interests you most? I can dive deeper into the methodology and specific tactics used.`;
+            }
+
+            // Handle leadership philosophy requests
+            if (lowerMessage.includes('leadership philosophy') || lowerMessage.includes('leadership style') || 
+                lowerMessage.includes('approach to leadership') || lowerMessage.includes('building teams')) {
+              const leadershipKey = 'leadership_philosophy';
+              if (usedResponses.has(leadershipKey)) {
+                return `Michael's leadership centers on three core principles:\n\n**1. Moving the Needle**: Focus on actions that create measurable impact, not just activity\n**2. Building Winning Cultures**: Create environments where high performance becomes natural\n**3. Helping Others Improve**: Design systems that help people focus and execute effectively\n\nHis servant-leadership approach means providing teams with information and tools they need while maintaining data-driven decision making for speed and clarity. As he puts it: "Winning is fun, and we're all in it together."\n\nWould you like specific examples of how he's applied this philosophy, or explore his strategic methodology?`;
+              }
+              setUsedResponses(prev => new Set([...prev, leadershipKey]));
+              return `Michael's leadership philosophy is built around creating environments where high performance becomes natural, not exceptional.\n\n**Core Leadership Principles:**\n\n**Moving the Needle**: Michael focuses on individual contributions that amplify entire teams. He cuts through complexity to find actionable opportunities that translate directly into measurable results.\n\n**Building Winning Cultures**: His approach creates environments where "winning is fun, and we're all in it together." This isn't about motivational slogans—it's about systematic approaches that help people focus and execute.\n\n**Helping Others Improve**: Rather than being the hero, Michael designs systems and processes that help others succeed. His servant-leadership approach provides teams with the information and tools they need while maintaining data-driven decision making.\n\n**Practical Application**: At DrayNow, this philosophy enabled him to align product, engineering, operations, marketing, and finance teams for complex initiatives like AI implementation and geographic expansion. The result? 100%+ sales growth and successful scaling from 3 to 26 markets.\n\nWould you like to see how he applies this philosophy in practice, or explore other aspects of his approach?`;
+            }
+
+            // Handle strategic methodology requests  
+            if (lowerMessage.includes('strategic methodology') || lowerMessage.includes('gtm methodology') || 
+                lowerMessage.includes('methodology') || lowerMessage.includes('framework') || lowerMessage.includes('approach')) {
+              const methodKey = 'strategic_methodology';
+              if (usedResponses.has(methodKey)) {
+                return `The Theory-to-Execution Methodology has three phases:\n\n**Phase 1 - Strategic Foundation**: Market analysis, competitive positioning, and opportunity identification\n**Phase 2 - System Design**: Building scalable processes, tools, and frameworks\n**Phase 3 - Execution & Optimization**: Implementation with continuous measurement and refinement\n\nThis systematic approach has delivered consistent results across diverse industries and organization types. Would you like to see how this applies to a specific business challenge?`;
+              }
+              setUsedResponses(prev => new Set([...prev, methodKey]));
+              return `Michael's **Theory-to-Execution Methodology** is a systematic approach that consistently turns complex challenges into competitive advantages.\n\n**The Framework:**\n\n**Theory**: Start with deep market understanding, competitive analysis, and clear identification of leverageable opportunities. This isn't academic theory—it's strategic foundation based on data and market realities.\n\n**Execution**: Build scalable systems and processes that translate strategy into measurable results. Michael focuses on creating repeatable frameworks that work across different scenarios and team members.\n\n**Continuous Optimization**: Use performance data to refine both strategy and execution, creating feedback loops that improve results over time.\n\n**Real-World Application**: At DrayNow, this methodology enabled geographic expansion from 3 to 26 markets using scalable GTM playbooks. Each new market didn't require rebuilding from scratch—the systematic approach ensured consistent performance across diverse conditions.\n\n**Key Differentiator**: Most leaders excel at either strategy or execution. Michael's methodology bridges both, ensuring that great ideas actually translate into business results.\n\nWould you like to see this methodology applied to a specific type of business challenge?`;
+            }
+            
+            const skillKeywords = {
+              'seo': ['seo', 'search engine optimization', 'organic search', 'search rankings'],
+              'sem': ['sem', 'search engine marketing', 'paid search', 'google ads', 'ppc'],
+              'email_marketing': ['email marketing', 'email campaigns', 'email automation', 'email strategy'],
+              'marketing_automation': ['marketing automation', 'hubspot', 'salesforce', 'automation platform'],
+              'pricing': ['pricing', 'price', 'pricing strategy', 'pricing model'],
+              'ai': ['ai', 'artificial intelligence', 'machine learning', 'automation', 'ai experience', 'experience with ai', 'implement ai', 'implemented ai', 'ai implementation']
+            };
+            
+            for (const [skill, keywords] of Object.entries(skillKeywords)) {
+              const hasDirectMatch = keywords.some(keyword => lowerMessage.includes(keyword));
+              
+              const howPatterns = [
+                new RegExp(`how\\s+.*${skill.replace('_', '\\s*')}`, 'i'),
+                new RegExp(`how\\s+(has|did)\\s+.*${skill.replace('_', '\\s*')}`, 'i'),
+                new RegExp(`how\\s+(does|has)\\s+michael.*${skill.replace('_', '\\s*')}`, 'i')
+              ];
+              
+              const aboutPattern = new RegExp(`(about|with)\\s+(his\\s+)?(experience\\s+with\\s+)?${skill.replace('_', '\\s*')}`, 'i');
+              const experiencePattern = new RegExp(`(experience|work)\\s+(with|in)\\s+${skill.replace('_', '\\s*')}`, 'i');
+              
+              const hasPatternMatch = howPatterns.some(pattern => pattern.test(message)) || 
+                                   aboutPattern.test(message) || 
+                                   experiencePattern.test(message);
+              
+              if (hasDirectMatch || hasPatternMatch) {
+                const skillResponse = getSkillSpecificResponse(skill, intent);
+                if (skillResponse) return skillResponse;
+              }
+            }
+
+            if (intent === 'evaluation') {
+              const evalKey = 'evaluation_response';
+              if (usedResponses.has(evalKey)) {
+                return `I'm happy to help evaluate Michael's fit. What specific aspects of the role would you like me to address?`;
+              }
+              setUsedResponses(prev => new Set([...prev, evalKey]));
+              return `Yes, I'd be happy to help you evaluate Michael's fit for the role! 
+
+Michael brings 15 years of strategic leadership experience with a proven track record of driving measurable results. His recent accomplishments include:
+
+• **Revenue Growth**: 100%+ sales growth in 12 months as Director of Business Enablement
+• **Market Expansion**: Scaled from 3 to 26 metro regions, generating 18% new revenue
+• **Process Innovation**: Built pricing tools that improved deal conversion by 150%
+• **AI Implementation**: Led strategic technology adoption with 3x speed improvements
+
+To give you the most relevant insights about Michael's fit, could you share more details about the specific role and key challenges you're looking to address?`;
+            }
+
+            if (intent === 'ai_consulting') {
+              const aiKey = 'ai_consulting_response';
+              if (usedResponses.has(aiKey)) {
+                return `Michael offers comprehensive AI consulting services. Connect with him on LinkedIn to discuss your specific AI challenges: https://www.linkedin.com/in/michaeldugas/`;
+              }
+              setUsedResponses(prev => new Set([...prev, aiKey]));
+              return `Yes, Michael offers AI consulting and custom solution development! In addition to his strategic leadership experience, he specializes in helping organizations implement AI solutions effectively.
+
+**AI Consulting Services:**
+• **Custom Chatbot Development** - Like this AI assistant, but tailored to your specific business needs
+• **AI Strategy & Implementation** - Strategic adoption with proper governance and ROI focus
+• **Business Process Automation** - Integrating AI tools to improve efficiency and productivity
+• **Data Governance & AI Security** - Ensuring secure, compliant AI adoption across organizations
+
+**Recent AI Experience:**
+• Led organization-wide AI adoption achieving 3x speed improvements in BI queries and content generation
+• Established Data Governance Committee with SOPs, security protocols, and strategic frameworks
+• Built this AI assistant as an example of practical AI application for professional purposes
+
+**Ready to explore AI consulting opportunities?**
+
+Connect with Michael directly on LinkedIn: https://www.linkedin.com/in/michaeldugas/
+
+When you connect, please mention your specific AI interests or challenges so Michael can provide the most relevant insights for your organization's needs.
+
+*This chatbot runs entirely in your browser and cannot store or send information - all contact needs to be made directly through LinkedIn.*`;
+            }
+
+            if (lowerMessage.includes('background') || lowerMessage.includes('about michael')) {
+              const bgKey = 'background_response';
+              if (usedResponses.has(bgKey)) {
+                return `Michael has 15 years of strategic leadership experience across diverse industries. Would you like to know about specific skills, case studies, or aspects of his approach?`;
+              }
+              setUsedResponses(prev => new Set([...prev, bgKey]));
+              return `Michael brings 15 years of strategic leadership experience across diverse industries and organization types—from lean startups to multinational corporations with roots dating back to the 1800s. He's built his reputation around a consistent, data-driven approach that turns complex challenges into competitive advantages.
+
+**Core Experience:**
+• **Current Role**: Director of Business Enablement at a 20-26 person tech startup (2021-Present)
+• **Consulting Background**: 7+ years running strategic advisory engagements (3-12 months typically)
+• **Industry Range**: Tech startups, B2B SaaS, environmental services, healthcare, luxury retail, emergency services
+
+**What Sets Him Apart:**
+Michael isn't your typical marketing leader—he's someone who moves the needle through individual contributions that amplify entire teams. His three core principles are:
+
+**1. Moving the Needle**: Cuts through complexity to find actionable opportunities that translate directly into measurable results
+**2. Building Winning Cultures**: Creates environments where high performance becomes natural, not exceptional  
+**3. Helping Others Improve**: Designs systems and processes that help people focus and execute with his philosophy that "winning is fun, and we're all in it together"
+
+His **Theory-to-Execution Methodology** has consistently delivered results: 100%+ sales growth, geographic expansion from 3 to 26 markets, $7M ARR scaling for consulting clients, and pioneering AI implementations with 3x speed improvements.
+
+Would you like me to share a specific example of how he's applied this approach, or would you prefer to explore a particular aspect of his experience in more depth?`;
+            }
+
+            return "What specific aspect of Michael's experience interests you most—his leadership philosophy, strategic methodology, AI consulting services, or perhaps some examples of transformation he's led?";
+          };
+
+          const generateConversationSummary = () => {
+            const userMessages = messages.filter(msg => msg.type === 'user').map(msg => msg.content);
+            
+            const summary = `CONVERSATION SUMMARY - ${new Date().toLocaleDateString()}
+Generated from Michael Dugas AI Assistant (${window.location.href})
+
+VISITOR INTEREST: ${getIntentLabel()}
+
+KEY TOPICS DISCUSSED:
+${userMessages.map((msg, i) => `• ${msg}`).join('\n')}
+
+NEXT STEPS: Contact Michael on LinkedIn (https://www.linkedin.com/in/michaeldugas/) to continue the conversation.
+
+---
+This summary was generated to help provide context when connecting with Michael Dugas.`;
+
+            return summary;
+          };
+
+          const copyToClipboard = async (text) => {
+            try {
+              await navigator.clipboard.writeText(text);
+              return true;
+            } catch (err) {
+              return false;
+            }
+          };
+
+          const handleGenerateSummary = async () => {
+            const summary = generateConversationSummary();
+            const success = await copyToClipboard(summary);
+            
+            const userQuestions = messages
+              .filter(msg => msg.type === 'user')
+              .map(msg => msg.content)
+              .join(' | ');
+            
+            await sendToSheet(summary, getIntentLabel(), userQuestions);
+            
+            const summaryMessage = {
+              type: 'bot',
+              content: success 
+                ? "Perfect! I've generated a conversation summary and copied it to your clipboard. You can paste this when connecting with Michael on LinkedIn to give him context about your discussion here.\n\nThe summary includes your areas of interest and the key topics we covered, making it easy for Michael to continue the conversation with relevant insights."
+                : "I've generated a conversation summary for you:\n\n" + summary + "\n\nYou can copy this text and include it when connecting with Michael on LinkedIn to provide context about your discussion here.",
+              timestamp: new Date()
+            };
+            
+            setMessages(prev => [...prev, summaryMessage]);
+          };
+
+          const handleSubmit = () => {
+            if (!inputValue.trim()) return;
+
+            const userMessage = {
+              type: 'user',
+              content: inputValue,
+              timestamp: new Date()
+            };
+
+            const detectedIntent = classifyIntent(inputValue);
+            setUserIntent(detectedIntent);
+
+            const botResponse = {
+              type: 'bot',
+              content: generateResponse(inputValue, detectedIntent),
+              timestamp: new Date()
+            };
+
+            setMessages(prev => [...prev, userMessage, botResponse]);
+            setInputValue('');
+          };
+
+          const handleKeyPress = (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              handleSubmit();
+            }
+          };
+
+          const getIntentLabel = () => {
+            switch(userIntent) {
+              case 'ai_consulting': return 'AI Consulting Interest';
+              case 'evaluation': return 'Candidate Evaluation';
+              case 'hiring': return 'Leadership Talent Interest';
+              case 'advisory': return 'Strategic Advisory Interest';  
+              case 'learning': return 'Learning & Discovery';
+              default: return 'Understanding Your Needs';
+            }
+          };
+
+          return React.createElement('div', { className: "max-w-4xl mx-auto h-screen flex flex-col bg-gradient-to-br from-slate-50 to-blue-50" },
+            React.createElement('div', { className: "bg-white shadow-lg border-b border-gray-200 p-6" },
+              React.createElement('div', { className: "flex items-center justify-between" },
+                React.createElement('div', null,
+                  React.createElement('h1', { className: "text-3xl font-bold text-gray-900" }, "Michael Dugas"),
+                  React.createElement('p', { className: "text-lg text-gray-600" }, "Strategic Leader | Revenue Growth | Winning Cultures"),
+                  React.createElement('p', { className: "text-sm text-gray-500 mt-1" }, "Theory-to-Execution Methodology | 15+ Years | Philadelphia, PA")
+                ),
+                React.createElement('div', { className: "text-right" },
+                  React.createElement('div', { className: "flex items-center gap-2 text-sm text-gray-600 mb-1" },
+                    React.createElement('span', null, getIntentLabel())
+                  ),
+                  React.createElement('div', { className: "text-xs text-gray-500" }, "Strategic AI Assistant")
+                )
+              )
+            ),
+            
+            React.createElement('div', { className: "flex-1 overflow-y-auto p-6 space-y-4" },
+              ...messages.map((message, index) =>
+                React.createElement('div', { key: index, className: `flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'}` },
+                  React.createElement('div', { className: `flex gap-3 max-w-3xl ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'}` },
+                    React.createElement('div', { 
+                      className: `w-8 h-8 rounded-full flex items-center justify-center ${
+                        message.type === 'user' ? 'bg-blue-600' : 'bg-gradient-to-r from-purple-600 to-blue-600'
+                      }`
+                    },
+                      React.createElement('div', { className: "w-4 h-4 bg-white rounded-full" })
+                    ),
+                    React.createElement('div', { 
+                      className: `rounded-2xl px-4 py-3 ${
+                        message.type === 'user' 
+                          ? 'bg-blue-600 text-white ml-auto' 
+                          : 'bg-white shadow-md border border-gray-200'
+                      }`
+                    },
+                      React.createElement('div', { className: "whitespace-pre-wrap" }, message.content),
+                      React.createElement('div', { 
+                        className: `text-xs mt-2 ${message.type === 'user' ? 'text-blue-100' : 'text-gray-500'}`
+                      }, message.timestamp.toLocaleTimeString())
+                    )
+                  )
+                )
+              ),
+              React.createElement('div', { ref: messagesEndRef })
+            ),
+
+            React.createElement('div', { className: "px-6 py-3 bg-gray-50 border-t border-gray-200" },
               React.createElement('div', { className: "flex flex-wrap gap-2 mb-3" },
                 React.createElement('button', { 
                   onClick: () => setInputValue("Tell me about Michael's background"),
@@ -24,3 +485,33 @@
                   className: "px-3 py-1 bg-blue-600 text-white border border-blue-600 rounded-full text-sm hover:bg-blue-700 transition-colors"
                 }, "Get Conversation Summary") : null
               )
+            ),
+
+            React.createElement('div', { className: "p-6 bg-white border-t border-gray-200" },
+              React.createElement('div', { className: "flex gap-3" },
+                React.createElement('input', {
+                  type: "text",
+                  value: inputValue,
+                  onChange: (e) => setInputValue(e.target.value),
+                  onKeyPress: handleKeyPress,
+                  placeholder: "What would you like to explore about Michael's approach to leadership and growth?",
+                  className: "flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                }),
+                React.createElement('button', {
+                  onClick: handleSubmit,
+                  disabled: !inputValue.trim(),
+                  className: "px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                }, "Send")
+              ),
+              React.createElement('div', { className: "text-xs text-gray-500 mt-2 text-center" },
+                "This AI assistant showcases Michael's strategic approach to leadership, revenue growth, and building winning cultures."
+              )
+            )
+          );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(MichaelDugasAI));
+    </script>
+</body>
+</html>
