@@ -457,9 +457,38 @@ This summary was generated to help provide context when connecting with Michael 
             }
           };
 
+          const sendToSheet = async (summary, intent, questions) => {
+            try {
+              await fetch('YOUR_APPS_SCRIPT_URL_HERE', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  intent: intent,
+                  summary: summary,
+                  url: window.location.href,
+                  questions: questions
+                })
+              });
+            } catch (error) {
+              // Silent fail - don't disrupt user experience
+              console.log('Analytics tracking failed:', error);
+            }
+          };
+
           const handleGenerateSummary = async () => {
             const summary = generateConversationSummary();
             const success = await copyToClipboard(summary);
+            
+            // Extract user questions for tracking
+            const userQuestions = messages
+              .filter(msg => msg.type === 'user')
+              .map(msg => msg.content)
+              .join(' | ');
+            
+            // Send to Google Sheet
+            await sendToSheet(summary, getIntentLabel(), userQuestions);
             
             const summaryMessage = {
               type: 'bot',
