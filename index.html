@@ -24,6 +24,7 @@
           ]);
           const [inputValue, setInputValue] = useState('');
           const [userIntent, setUserIntent] = useState('unknown');
+          const [usedResponses, setUsedResponses] = useState(new Set());
           const messagesEndRef = useRef(null);
 
           const scrollToBottom = () => {
@@ -76,31 +77,55 @@
             }
           };
 
+          const sendToSheet = async (summary, intent, questions) => {
+            try {
+              await fetch('https://script.google.com/macros/s/AKfycbw1gpCuKiipDg4RAlPlWCQFhkubzJNoumaK8R2jsZHG8dLth5TKnWFXX37sTcYfqG5D/exec', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  intent: intent,
+                  summary: summary,
+                  url: window.location.href,
+                  questions: questions
+                })
+              });
+            } catch (error) {
+              console.log('Analytics tracking failed:', error);
+            }
+          };
+
           const getSkillSpecificResponse = (skill, intent) => {
             const skillResponses = {
               seo: {
-                response: `Michael has extensive SEO expertise with proven results. He built a nationwide emergency dental lead engine that generated dozens of high-value leads daily from 50+ metro regions using purely organic traffic - zero advertising spend. He also led an integrated SEM/SEO initiative for a transportation safety company that achieved 200% sales growth while reducing paid search spend by 40%.`,
-                short: `Michael's SEO work includes building a nationwide organic lead engine with zero ad spend and achieving 200% sales growth through integrated SEM/SEO strategies.`
+                response: `Michael has extensive SEO expertise with proven organic growth results. He built a nationwide emergency dental lead engine that generated dozens of high-value leads daily from 50+ metro regions using purely organic traffic - zero advertising spend. For a transportation safety company, he used integrated SEM/SEO strategy with performance data from paid campaigns informing content marketing, achieving 200% sales growth while reducing SEM spend by 40%.`,
+                short: `Michael built a nationwide organic lead engine with zero ad spend and achieved 200% sales growth through integrated SEO strategies.`
               },
               
               sem: {
-                response: `Michael combines SEM with broader digital strategy. For a transportation safety company, he used performance data from SEM campaigns to inform content marketing strategy, achieving 200% sales increase with 40% reduced SEM spend. He's also managed $1M+ in annual cross-channel ad spend across search, social, display, and programmatic.`,
-                short: `Michael has managed $1M+ in annual ad spend and achieved 200% sales growth by integrating SEM data with content marketing strategy.`
+                response: `Michael combines SEM with strategic digital approaches across multiple successful implementations. He's managed campaigns for luxury appliance retailers using Adobe Commerce integration, transportation safety companies achieving 200% growth, and DrayNow where he rebuilt campaigns and landing pages that tripled app user base while reducing CAC by 61%. He manages complex attribution systems across GoogleAds, MicrosoftAds, and Meta platforms.`,
+                short: `Michael rebuilt SEM campaigns that tripled app users while reducing CAC by 61% and achieved 200% sales growth for e-commerce clients.`
               },
-              
+
+              email_marketing: {
+                response: `Michael has implemented email marketing across complex multi-channel campaigns. At DrayNow, he integrated email marketing with marketing automation using real-time app usage data, reducing manual touchpoints by 30% while maintaining conversion rates. He's deployed email campaigns as part of GTM playbooks for geographic expansion and luxury e-commerce customer acquisition.`,
+                short: `Michael integrated email marketing with app data, reducing manual touchpoints by 30% while maintaining conversion rates.`
+              },
+
+              marketing_automation: {
+                response: `Michael has deep marketing automation expertise, particularly with HubSpot and Salesforce platforms. At DrayNow, he bootstrapped a solution integrating CRM and app user data using SQL and Zapier, enriching marketing automations with real-time usage data. This achieved 30% reduction in manual touchpoints while maintaining user conversion rates. He's deployed automation across multiple client environments for lead nurturing and user onboarding.`,
+                short: `Michael built marketing automation integrations that reduced manual touchpoints by 30% using SQL, Zapier, and real-time data enrichment.`
+              },
+
               pricing: {
-                response: `Michael transformed a pricing crisis into competitive advantage. When a startup was losing 50% market share due to 24+ hour pricing cycles, he built a mathematical pricing model using market data statistics. Result: instantaneous pricing, public pricing capability, and deal conversion jumped 150% from 8% to 20%.`,
-                short: `Michael built a real-time pricing tool that improved deal conversion by 150% and eliminated 24+ hour pricing delays.`
+                response: `Michael transformed pricing from organizational bottleneck to competitive advantage. When DrayNow was losing 50% market share due to 24+ hour pricing cycles, he designed a mathematical pricing model using market data statistics that enabled instantaneous pricing. Deal conversion jumped from 8% to 20% overnight, and they established public pricing capabilities for the first time, building customer trust and transparency.`,
+                short: `Michael built mathematical pricing models that improved deal conversion from 8% to 20% overnight and enabled public pricing capabilities.`
               },
-              
-              analytics: {
-                response: `Michael uses business intelligence to drive strategic decisions. He established KPIs and reporting cadences that improved organizational focus, led AI adoption achieving 3x speed improvements in BI queries, and founded a Data Governance Committee for strategic AI implementation.`,
-                short: `Michael led AI adoption achieving 3x BI query speed improvements and established data governance frameworks for strategic decision-making.`
-              },
-              
+
               ai: {
-                response: `Michael has a track record of spearheading AI initiatives with significant organizational impact. At his recent role, he led organization-wide AI adoption that achieved 3x speed improvements in BI queries and content generation. He established a Data Governance Committee with SOPs and security protocols, ensuring strategic, secure AI integration rather than ad-hoc adoption. He integrated AI assistants into marketing operations and business intelligence teams' daily workflows while maintaining data integrity and security. This AI assistant you're using is an example of his practical AI implementation approach.`,
-                short: `Michael achieved 3x AI speed improvements through strategic implementation and built this AI assistant as an example of practical AI application.`
+                response: `Michael has spearheaded AI initiatives with significant organizational impact across multiple implementations. At DrayNow, he led organization-wide AI adoption achieving 3x speed improvements in BI queries and content generation. He established a Data Governance Committee with SOPs and security protocols, ensuring strategic, secure AI integration rather than ad-hoc adoption. He integrated AI tools into marketing operations and business intelligence teams' daily workflows while maintaining data integrity. This AI assistant you're using demonstrates his practical AI implementation approach.`,
+                short: `Michael achieved 3x AI speed improvements through strategic Data Governance Committee implementation and built this AI assistant as practical application example.`
               }
             };
             
@@ -110,13 +135,12 @@
             const responseKey = `skill_${skill}`;
             const shortKey = `skill_${skill}_short`;
             
-            // Use short version if full response already used
             if (usedResponses.has(responseKey)) {
               if (!usedResponses.has(shortKey)) {
                 setUsedResponses(prev => new Set([...prev, shortKey]));
                 return skillData.short + (intent === 'hiring' ? "\n\nThis systematic approach to leveraging tools for measurable results is what Michael brings to leadership roles." : "");
               }
-              return `Michael has specific experience with ${skill.toUpperCase()}. Would you like to know about other areas of his expertise?`;
+              return `Michael has specific experience with ${skill.replace('_', ' ')}. Would you like to know about other areas of his expertise?`;
             }
             
             setUsedResponses(prev => new Set([...prev, responseKey]));
@@ -124,7 +148,6 @@
           };
 
           const handleEvaluativeQuestion = (lowerMessage, intent) => {
-            // Detect yes/no evaluative questions
             const evaluativePatterns = [
               'is michael a good', 'is he a good', 'would michael be a good',
               'is michael effective', 'is he effective', 'does michael have',
@@ -134,7 +157,6 @@
             const isEvaluative = evaluativePatterns.some(pattern => lowerMessage.includes(pattern));
             if (!isEvaluative) return null;
             
-            // Management/Leadership questions
             if (lowerMessage.includes('manager') || lowerMessage.includes('leader')) {
               return `Yes, Michael is an effective manager. His track record demonstrates strong management capabilities:
 
@@ -144,82 +166,50 @@
 
 **Cross-Functional Success**: He successfully aligned product, engineering, operations, marketing, and finance teams for complex initiatives like market expansion and AI implementation.
 
-**Culture Building**: He creates environments where winning becomes natural through positive reinforcement and clear north star alignment.
-
 His philosophy that "winning is fun, and we're all in it together" combined with measurable results suggests strong managerial effectiveness.`;
             }
             
-            // Strategic questions
-            if (lowerMessage.includes('strategic') || lowerMessage.includes('strategist')) {
-              return `Yes, Michael is a strong strategic thinker. Evidence includes:
-
-**Framework Development**: Created the Six Pillars of Go-to-Market Success and Theory-to-Execution Methodology
-**Market Insights**: Identified untapped market opportunities worth 18% new revenue that others overlooked
-**Problem Solving**: Reversed 50% market share decline through strategic repositioning
-**Systems Thinking**: Built scalable playbooks and processes that enabled systematic growth
-
-His approach goes beyond tactics to create comprehensive theories of winning that drive organizational success.`;
-            }
-            
-            // Results/Performance questions  
-            if (lowerMessage.includes('effective') || lowerMessage.includes('successful') || lowerMessage.includes('good at')) {
-              return `Yes, Michael consistently delivers strong results. His effectiveness is demonstrated through:
+            return `Yes, Michael consistently delivers strong results. His effectiveness is demonstrated through:
 
 **Measurable Outcomes**: 100%+ sales growth, 150% deal conversion improvement, 3x AI speed improvements
 **Scale Achievements**: Geographic expansion from 3 to 26 markets, $8M ARR client scaling
 **Innovation**: Real-time pricing tools, Data Governance Committee, practical AI implementation
-**Versatility**: Success across diverse industries from startups to multinational corporations
 
 The combination of consistent results and systematic approaches indicates high effectiveness across multiple domains.`;
-            }
-            
-            // Experience questions
-            if (lowerMessage.includes('experienced') || lowerMessage.includes('qualified')) {
-              return `Yes, Michael has extensive relevant experience. His qualifications include:
-
-**15 Years**: Strategic leadership across diverse industries and organization types
-**Proven Track Record**: Multiple successful transformations with measurable results  
-**Technical Expertise**: HubSpot/Salesforce certifications, AI implementation, data governance
-**Thought Leadership**: Published content, speaking engagements, peer recognition
-
-His breadth of experience from startup to enterprise level demonstrates deep, applicable expertise.`;
-            }
-            
-            return null;
           };
 
           const generateResponse = (message, intent) => {
             const lowerMessage = message.toLowerCase();
             
-            // Handle evaluative questions first
             const evaluativeResponse = handleEvaluativeQuestion(lowerMessage, intent);
             if (evaluativeResponse) return evaluativeResponse;
             
-            // Check for specific skills first
             const skillKeywords = {
               'seo': ['seo', 'search engine optimization', 'organic search', 'search rankings'],
               'sem': ['sem', 'search engine marketing', 'paid search', 'google ads', 'ppc'],
               'email_marketing': ['email marketing', 'email campaigns', 'email automation', 'email strategy'],
-              'marketing_automation': ['marketing automation', 'hubspot', 'salesforce', 'automation platform', 'marketing platform'],
-              'abm': ['account based marketing', 'abm', 'account-based', 'targeted marketing'],
-              'sales_enablement': ['sales enablement', 'sales support', 'sales tools', 'sales process'],
-              'process_design': ['process design', 'workflow design', 'system design', 'process creation'],
-              'process_optimization': ['process optimization', 'workflow optimization', 'efficiency improvement', 'process improvement'],
-              'cross_functional': ['cross-functional', 'cross functional', 'team alignment', 'department coordination'],
-              'content_marketing': ['content marketing', 'content strategy', 'content creation', 'content development'],
-              'funnel_optimization': ['funnel optimization', 'conversion optimization', 'funnel improvement', 'conversion funnel'],
-              'gtm_strategy': ['go-to-market', 'gtm strategy', 'go to market', 'market entry', 'gtm'],
-              'strategy': ['strategic planning', 'business strategy', 'strategic thinking', 'strategic approach'],
-              'coaching': ['coaching', 'mentoring', 'team coaching', 'executive coaching'],
-              'training': ['training', 'team training', 'skill development', 'capability building'],
-              'leadership': ['leadership style', 'management style', 'leading teams', 'team leadership'],
+              'marketing_automation': ['marketing automation', 'hubspot', 'salesforce', 'automation platform'],
               'pricing': ['pricing', 'price', 'pricing strategy', 'pricing model'],
-              'analytics': ['analytics', 'data analysis', 'business intelligence', 'bi', 'reporting'],
-              'ai': ['ai', 'artificial intelligence', 'machine learning', 'automation']
+              'ai': ['ai', 'artificial intelligence', 'machine learning', 'automation', 'ai experience', 'experience with ai', 'implement ai', 'implemented ai', 'ai implementation']
             };
             
             for (const [skill, keywords] of Object.entries(skillKeywords)) {
-              if (keywords.some(keyword => lowerMessage.includes(keyword))) {
+              const hasDirectMatch = keywords.some(keyword => lowerMessage.includes(keyword));
+              
+              const howPatterns = [
+                new RegExp(`how\\s+.*${skill.replace('_', '\\s*')}`, 'i'),
+                new RegExp(`how\\s+(has|did)\\s+.*${skill.replace('_', '\\s*')}`, 'i'),
+                new RegExp(`how\\s+(does|has)\\s+michael.*${skill.replace('_', '\\s*')}`, 'i')
+              ];
+              
+              const aboutPattern = new RegExp(`(about|with)\\s+(his\\s+)?(experience\\s+with\\s+)?${skill.replace('_', '\\s*')}`, 'i');
+              const experiencePattern = new RegExp(`(experience|work)\\s+(with|in)\\s+${skill.replace('_', '\\s*')}`, 'i');
+              
+              const hasPatternMatch = howPatterns.some(pattern => pattern.test(message)) || 
+                                   aboutPattern.test(message) || 
+                                   experiencePattern.test(message);
+              
+              if (hasDirectMatch || hasPatternMatch) {
                 const skillResponse = getSkillSpecificResponse(skill, intent);
                 if (skillResponse) return skillResponse;
               }
@@ -296,58 +286,57 @@ His **Theory-to-Execution Methodology** has consistently delivered results: 100%
 Would you like me to share a specific example of how he's applied this approach, or would you prefer to explore a particular aspect of his experience in more depth?`;
             }
 
-            // Shortened responses for other topics when already used
-            if (lowerMessage.includes('team') || lowerMessage.includes('leadership')) {
-              const teamKey = 'team_response';
-              if (usedResponses.has(teamKey)) {
-                return `Michael uses servant-leadership with data-driven decision making to build high-performing teams. His approach focuses on providing tools and clarity while celebrating both individual and team wins.`;
-              }
-              setUsedResponses(prev => new Set([...prev, teamKey]));
-              return `Michael's approach to building high-performing teams centers on servant-leadership combined with data-driven decision making.
+            return "What specific aspect of Michael's experience interests you most—his leadership philosophy, strategic methodology, AI consulting services, or perhaps some examples of transformation he's led?";
+          };
 
-**His Leadership Philosophy:**
-
-**Servant-Leadership Foundation**: Michael leads by supporting his team, ensuring they have the information and tools they need to be at their best. He focuses on removing obstacles and providing resources rather than micromanaging.
-
-**Data-First Decision Making**: While maintaining a servant-leadership style, Michael ensures this doesn't slow down critical decisions. By being data-first in all things, he creates clarity that enables fast, confident decision-making across the team.
-
-**Shared Goals & Motivation Alignment**: He instills his team with a deep understanding of their shared goals and his motivations for improving collective outcomes. Everyone knows not just what they're doing, but why it matters.
-
-**Positive Culture Building**: Michael creates a corporate culture that celebrates both personal achievement and team wins. He believes in recognizing individual contributions while reinforcing how they connect to team success.
-
-**North Star Clarity**: Every team member understands how their role contributes to team success and has a clear 'north star' for staying the course to strategic success. This creates alignment without constant oversight.
-
-**The Result**: Teams that are empowered to make decisions, clear on their purpose, and motivated by both individual growth and collective achievement. This approach creates high performance through engagement rather than pressure.
-
-What aspects of team leadership and culture-building are most important for your organization's success?`;
-            }
-
-            // If we get here, no skill was detected. Check for experience/about patterns
-            if (lowerMessage.includes('experience') || lowerMessage.includes('about') || lowerMessage.includes('what about')) {
-              // Try to extract potential skill from the question
-              const words = lowerMessage.split(/\s+/);
-              const skillWords = ['marketing', 'sales', 'strategy', 'leadership', 'management', 'data', 'technology', 'consulting'];
-              const mentionedSkill = skillWords.find(skill => lowerMessage.includes(skill));
-              
-              if (mentionedSkill) {
-                const skillKey = `general_${mentionedSkill}`;
-                if (!usedResponses.has(skillKey)) {
-                  setUsedResponses(prev => new Set([...prev, skillKey]));
-                  return `Michael has extensive ${mentionedSkill} experience across his 15-year career. He's delivered measurable results including 100%+ sales growth, geographic expansion from 3 to 26 markets, and successful implementations across diverse industries. Would you like to know about specific ${mentionedSkill} projects or methodologies he's used?`;
-                }
-              }
-              
-              return `I'd be happy to share details about Michael's experience. Could you be more specific about which area interests you most? For example: his leadership style, strategic approach, specific skills like AI or sales enablement, or particular industry experience?`;
-            }
-
-            // Default varied responses
-            const defaultResponses = [
-              "What specific aspect of Michael's experience interests you most?",
-              "I'd be happy to share more details. What would you like to explore?",
-              "Michael has extensive experience in many areas. What particular topic would be most valuable for you?"
-            ];
+          const generateConversationSummary = () => {
+            const userMessages = messages.filter(msg => msg.type === 'user').map(msg => msg.content);
             
-            return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+            const summary = `CONVERSATION SUMMARY - ${new Date().toLocaleDateString()}
+Generated from Michael Dugas AI Assistant (${window.location.href})
+
+VISITOR INTEREST: ${getIntentLabel()}
+
+KEY TOPICS DISCUSSED:
+${userMessages.map((msg, i) => `• ${msg}`).join('\n')}
+
+NEXT STEPS: Contact Michael on LinkedIn (https://www.linkedin.com/in/michaeldugas/) to continue the conversation.
+
+---
+This summary was generated to help provide context when connecting with Michael Dugas.`;
+
+            return summary;
+          };
+
+          const copyToClipboard = async (text) => {
+            try {
+              await navigator.clipboard.writeText(text);
+              return true;
+            } catch (err) {
+              return false;
+            }
+          };
+
+          const handleGenerateSummary = async () => {
+            const summary = generateConversationSummary();
+            const success = await copyToClipboard(summary);
+            
+            const userQuestions = messages
+              .filter(msg => msg.type === 'user')
+              .map(msg => msg.content)
+              .join(' | ');
+            
+            await sendToSheet(summary, getIntentLabel(), userQuestions);
+            
+            const summaryMessage = {
+              type: 'bot',
+              content: success 
+                ? "Perfect! I've generated a conversation summary and copied it to your clipboard. You can paste this when connecting with Michael on LinkedIn to give him context about your discussion here.\n\nThe summary includes your areas of interest and the key topics we covered, making it easy for Michael to continue the conversation with relevant insights."
+                : "I've generated a conversation summary for you:\n\n" + summary + "\n\nYou can copy this text and include it when connecting with Michael on LinkedIn to provide context about your discussion here.",
+              timestamp: new Date()
+            };
+            
+            setMessages(prev => [...prev, summaryMessage]);
           };
 
           const handleSubmit = () => {
@@ -391,7 +380,6 @@ What aspects of team leadership and culture-building are most important for your
           };
 
           return React.createElement('div', { className: "max-w-4xl mx-auto h-screen flex flex-col bg-gradient-to-br from-slate-50 to-blue-50" },
-            // Header
             React.createElement('div', { className: "bg-white shadow-lg border-b border-gray-200 p-6" },
               React.createElement('div', { className: "flex items-center justify-between" },
                 React.createElement('div', null,
@@ -408,7 +396,6 @@ What aspects of team leadership and culture-building are most important for your
               )
             ),
             
-            // Chat Area
             React.createElement('div', { className: "flex-1 overflow-y-auto p-6 space-y-4" },
               ...messages.map((message, index) =>
                 React.createElement('div', { key: index, className: `flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'}` },
@@ -438,7 +425,6 @@ What aspects of team leadership and culture-building are most important for your
               React.createElement('div', { ref: messagesEndRef })
             ),
 
-            // Quick Action Buttons
             React.createElement('div', { className: "px-6 py-3 bg-gray-50 border-t border-gray-200" },
               React.createElement('div', { className: "flex flex-wrap gap-2 mb-3" },
                 React.createElement('button', { 
@@ -464,7 +450,6 @@ What aspects of team leadership and culture-building are most important for your
               )
             ),
 
-            // Input Area
             React.createElement('div', { className: "p-6 bg-white border-t border-gray-200" },
               React.createElement('div', { className: "flex gap-3" },
                 React.createElement('input', {
@@ -488,7 +473,8 @@ What aspects of team leadership and culture-building are most important for your
           );
         };
 
-        ReactDOM.render(React.createElement(MichaelDugasAI), document.getElementById('root'));
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(MichaelDugasAI));
     </script>
 </body>
 </html>
