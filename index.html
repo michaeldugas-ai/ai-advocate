@@ -79,7 +79,7 @@
 
           const sendToSheet = async (summary, intent, questions) => {
             try {
-              await fetch('https://script.google.com/macros/s/AKfycbxgSqcI3oGQgc-aaN0Kv0oOIX4SyAL1UpaTgi43-a-j-OKnLG81m1dXbbSJrqsTM_E8/exec', {
+              await fetch('https://script.google.com/macros/s/AKfycbw1gpCuKiipDg4RAlPlWCQFhkubzJNoumaK8R2jsZHG8dLth5TKnWFXX37sTcYfqG5D/exec', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -97,6 +97,11 @@
           };
 
           const getSkillSpecificResponse = (skill, intent) => {
+            // First check for case study example
+            const caseStudyResponse = getCaseStudyResponse(skill, intent);
+            if (caseStudyResponse) return caseStudyResponse;
+            
+            // Fallback to existing skill responses
             const skillResponses = {
               seo: {
                 response: `Michael has extensive SEO expertise with proven organic growth results. He built a nationwide emergency dental lead engine that generated dozens of high-value leads daily from 50+ metro regions using purely organic traffic - zero advertising spend. For a transportation safety company, he used integrated SEM/SEO strategy with performance data from paid campaigns informing content marketing, achieving 200% sales growth while reducing SEM spend by 40%.`,
